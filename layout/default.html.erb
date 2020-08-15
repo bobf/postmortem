@@ -5,7 +5,8 @@
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
         crossorigin="anonymous">
   </head>
-  <body style="background-color: #efefef; padding: 2rem">
+  <body style="background-color: #efefef; padding: 2rem; height: 100%">
+    <div style="height: 100%; display: flex; flex-direction: column">
     <table class="table table-hover table-bordered" style="background-color: #fff">
       <tbody>
         <tr>
@@ -35,12 +36,14 @@
       </tbody>
     </table>
 
-    <div style="background-color: #ffffff; padding: 2rem">
-      <iframe id="mail-iframe" style="border-style: none; width: 100%"></iframe>
+    <div style="background-color: #ffffff; padding: 2rem; height: 100%; flex-grow: 1">
+      <iframe id="mail-iframe" src="" style="border-style: none; width: 100%; height: 100%"></iframe>
     </div>
     <script>
       var mailContent = <%= mail.html_body.to_json %>;
-      document.querySelector("#mail-iframe").contentDocument.write(mailContent);
+      var iframeDocument = document.querySelector("#mail-iframe").contentDocument;
+      iframeDocument.write(mailContent);
+      iframeDocument.close();
     </script>
   </body>
 </html>
