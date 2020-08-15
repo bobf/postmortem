@@ -25,7 +25,12 @@ Gem::Specification.new do |spec|
   spec.executables   = []
   spec.require_paths = ['lib']
 
+  spec.add_runtime_dependency 'mail', '~> 2.7'
+
+  spec.add_development_dependency 'actionmailer', '~> 6.0'
   spec.add_development_dependency 'rspec', '~> 3.9'
+  spec.add_development_dependency 'rspec-its', '~> 1.3'
   spec.add_development_dependency 'rubocop', '~> 0.88.0'
   spec.add_development_dependency 'strong_versions', '~> 0.4.5'
+  spec.add_development_dependency 'timecop', '~> 0.9.1'
 end

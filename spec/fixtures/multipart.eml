@@ -1,0 +1,28 @@
+Date: Sat, 15 Aug 2020 14:56:57 +0100
+To: user@example.com
+Cc: cc@example.com
+Message-ID: <5f37e9a972299_5850fc855742@pangloss.mail>
+Subject: Multipart email
+Mime-Version: 1.0
+Content-Type: multipart/alternative;
+ boundary="--==_mimepart_5f37e9a971d99_5850fc855648";
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+
+----==_mimepart_5f37e9a971d99_5850fc855648
+Content-Type: text/plain;
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+My text content
+
+----==_mimepart_5f37e9a971d99_5850fc855648
+Content-Type: text/html;
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<div>My HTML content</div>
+
+
+----==_mimepart_5f37e9a971d99_5850fc855648--
