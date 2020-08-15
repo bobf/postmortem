@@ -32,8 +32,21 @@ RSpec.describe Postmortem do
     expect(path.read.strip).to eql '<html><body><div>My HTML content</div></body></html>'
   end
 
-  it 'intercepts ActionMailer deliveries and outputs a URL' do
-    expect(STDOUT).to receive(:write).with("#{path}\n")
-    TestMailer.multipart_email.deliver_now
+  context 'output is a tty' do
+    before { allow(STDOUT).to receive(:tty?) { true } }
+
+    it 'intercepts ActionMailer deliveries and outputs a URL' do
+      expect(STDOUT).to receive(:write).with("\e[34m[postmortem]\e[36m #{path}\e[0m\n")
+      TestMailer.multipart_email.deliver_now
+    end
+  end
+
+  context 'output is a non-tty file' do
+    before { allow(STDOUT).to receive(:tty?) { false } }
+
+    it 'intercepts ActionMailer deliveries and outputs a URL' do
+      expect(STDOUT).to receive(:write).with("#{path}\n")
+      TestMailer.multipart_email.deliver_now
+    end
   end
 end

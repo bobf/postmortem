@@ -6,6 +6,7 @@ require 'time'
 require 'fileutils'
 require 'mail'
 require 'erb'
+require 'json'
 
 require 'postmortem/version'
 require 'postmortem/adapters'
@@ -46,8 +47,14 @@ module Postmortem
     private
 
     def log_delivery(delivery)
-      output_file.write("#{delivery.path}\n")
+      output_file.write(colorized(delivery.path.to_s) + "\n")
       output_file.flush
+    end
+
+    def colorized(val)
+      return val unless output_file.tty?
+
+      "\e[34m[postmortem]\e[36m #{val}\e[0m"
     end
   end
 end

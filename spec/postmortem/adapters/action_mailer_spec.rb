@@ -19,5 +19,5 @@ RSpec.describe Postmortem::Adapters::ActionMailer do
   its(:to) { is_expected.to eql 'to@example.com' }
   its(:cc) { is_expected.to eql 'cc@example.com' }
   its(:bcc) { is_expected.to eql 'bcc@example.com' }
-  its(:html_body) { is_expected.to eql "<div>My HTML content</div>\n\n" }
+  its(:html_body) { is_expected.to eql '<div>My HTML content</div>' }
 end

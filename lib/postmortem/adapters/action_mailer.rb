@@ -13,7 +13,7 @@ module Postmortem
           cc: data[:cc],
           bcc: data[:bcc],
           subject: data[:subject],
-          html_body: Mail.new(data[:mail]).html_part.decoded
+          html_body: Mail.new(data[:mail]).html_part.decoded.strip
         }
       end
     end

@@ -1,5 +1,46 @@
 <html>
-  <body style="background-color: #efefef">
-    <%= @content %>
+  <head>
+  <link rel="stylesheet"
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+        crossorigin="anonymous">
+  </head>
+  <body style="background-color: #efefef; padding: 2rem">
+    <table class="table table-hover table-bordered" style="background-color: #fff">
+      <tbody>
+        <tr>
+          <th style="width: 7rem;">From:</th>
+          <td><%= mail.from&.join(', ') %></td>
+        </tr>
+
+        <tr>
+          <th>To:</th>
+          <td><%= mail.to&.join(', ') %></td>
+        </tr>
+
+        <tr>
+          <th>Cc:</th>
+          <td><%= mail.cc&.join(', ') %></td>
+        </tr>
+
+        <tr>
+          <th>Bcc:</th>
+          <td><%= mail.bcc&.join(', ') %></td>
+        </tr>
+
+        <tr>
+          <th>Subject:</th>
+          <td><%= mail.subject %></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="background-color: #ffffff; padding: 2rem">
+      <iframe id="mail-iframe" style="border-style: none; width: 100%"></iframe>
+    </div>
+    <script>
+      var mailContent = <%= mail.html_body.to_json %>;
+      document.querySelector("#mail-iframe").contentDocument.write(mailContent);
+    </script>
   </body>
 </html>

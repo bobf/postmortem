@@ -12,7 +12,7 @@ module Postmortem
 
     def record
       path.parent.mkpath
-      File.write(path, Layout.new(@adapter.html_body.strip).content)
+      File.write(path, Layout.new(@adapter).content)
     end
 
     private
