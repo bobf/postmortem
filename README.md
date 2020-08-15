@@ -1,15 +1,23 @@
 # Postmortem
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/postmortem`. To experiment with that code, run `bin/console` for an interactive prompt.
+_Postmortem_ provides a simple and clean preview of all outgoing mails sent by your application.
 
-TODO: Delete this and the text above, and describe your gem
+For every email your application sends a clearly-visible log entry is written with a temporary file that you can load in your browser to preview your email.
+
+## Features
+
+* Seamless integration with  _ActionMailer_.
+* Preview email content as well as typical email headers (recipients, subject, etc.).
+* Email is loaded inside an `<iframe>` to ensure that no styles are inherited from the parent document and that the document is valid (i.e. no need to worry about nested `<html>` tags etc.
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Add the gem to your application's Gemfile:
 
 ```ruby
-gem 'postmortem'
+group :development, :test do
+  gem 'postmortem', '~> 0.1.1'
+end
 ```
 
 And then execute:
@@ -22,18 +30,42 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+_Postmortem_ automatically integrates with _Rails ActionMailer_. When an email is sent an entry will be visible in your application's log output.
 
-## Development
+Load the provided file in your browser to preview your email:
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+![Example](doc/example.png)
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+## Configuration
+
+Configure _Postmortem_ by calling `Postmortem.configure`, e.g. in a _Rails_ initializer.
+
+```ruby
+# config/initializers/postmortem.rb
+Postmortem.configure do |config|
+  # Colorize log output to improve visibility (default: true).
+  config.colorize = true
+
+  # Prefix all preview filenames with timestamp (default: true).
+  # Setting to false allows refreshing the same path to view the latest version.
+  config.timestmap = true
+
+  # Path to the Postmortem log file, where preview paths are written (default: STDOUT).
+  config.log_path = '/path/to/postmortem.log'
+
+  # Path to save preview .html files (default: OS-provided temp directory).
+  # The directory will be created if it does not exist.
+  config.preview_directory = '/path/to/postmortem/directory'
+
+  # Provide a custom layout path (i.e. the page that wraps the email preview).
+  # If no extension provided `.html.erb` will be appended. See default layout for more info.
+  config.layout = '/path/to/layout'
+end
+```
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/postmortem.
-
+Feel free to make a pull request.
 
 ## License
 

@@ -6,38 +6,47 @@
         crossorigin="anonymous">
   </head>
   <body style="background-color: #efefef; padding: 2rem; height: 100%">
-    <div style="height: 100%; display: flex; flex-direction: column">
-    <table class="table table-hover table-bordered" style="background-color: #fff">
-      <tbody>
-        <tr>
-          <th style="width: 7rem;">From:</th>
-          <td><%= mail.from&.join(', ') %></td>
-        </tr>
+    <div class="container" style="height: 90vh; max-width: 100%;">
+      <div class="row" style="height: 100%">
+        <div class="col" style="height: 100%; max-width: 35rem">
+          <table class="table table-hover table table-bordered" style="background-color: #fff">
+            <tbody>
+              <tr>
+                <th>Subject:</th>
+                <td><%= mail.subject %></td>
+              </tr>
 
-        <tr>
-          <th>To:</th>
-          <td><%= mail.to&.join(', ') %></td>
-        </tr>
+              <tr>
+                <th style="width: 7rem;">From:</th>
+                <td><%= format_email_array(mail.from) %></td>
+              </tr>
 
-        <tr>
-          <th>Cc:</th>
-          <td><%= mail.cc&.join(', ') %></td>
-        </tr>
+              <tr>
+                <th>Reply-To:</th>
+                <td><%= format_email_array(mail.reply_to) %></td>
+              </tr>
 
-        <tr>
-          <th>Bcc:</th>
-          <td><%= mail.bcc&.join(', ') %></td>
-        </tr>
+              <tr>
+                <th>To:</th>
+                <td><%= format_email_array(mail.to) %></td>
+              </tr>
 
-        <tr>
-          <th>Subject:</th>
-          <td><%= mail.subject %></td>
-        </tr>
-      </tbody>
-    </table>
+              <tr>
+                <th>Cc:</th>
+                <td><%= format_email_array(mail.cc) %></td>
+              </tr>
 
-    <div style="background-color: #ffffff; padding: 2rem; height: 100%; flex-grow: 1">
-      <iframe id="mail-iframe" src="" style="border-style: none; width: 100%; height: 100%"></iframe>
+              <tr>
+                <th>Bcc:</th>
+                <td><%= format_email_array(mail.bcc) %></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="background-color: #ffffff; padding: 2rem; height: 100%" class="col">
+          <iframe id="mail-iframe" src="" style="border-style: none; width: 100%; height: 100%"></iframe>
+        </div>
+      </div>
     </div>
     <script>
       var mailContent = <%= mail.html_body.to_json %>;

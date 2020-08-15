@@ -8,7 +8,11 @@ module Postmortem
         @mail = adapted(data)
       end
 
-      %i[from to cc bcc subject html_body].each do |method_name|
+      def empty?
+        @mail.nil?
+      end
+
+      %i[from reply_to to cc bcc subject html_body].each do |method_name|
         define_method method_name do
           @mail[method_name]
         end

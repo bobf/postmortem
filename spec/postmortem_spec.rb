@@ -3,24 +3,24 @@
 RSpec.describe Postmortem do
   subject { described_class }
 
-  let(:output_directory) { File.join(Dir.tmpdir, 'postmortem-test') }
-  let(:path) { Pathname.new(output_directory).join('2001-02-03_04-05-06__Multipart_email.html') }
+  let(:preview_directory) { File.join(Dir.tmpdir, 'postmortem-test') }
+  let(:path) { Pathname.new(preview_directory).join('2001-02-03_04-05-06__Multipart_email.html') }
 
   before do
-    Postmortem.output_directory = output_directory
-    Postmortem.layout = File.join(__dir__, 'support', 'test_layout.html.erb')
+    Postmortem.configure do |config|
+      config.preview_directory = preview_directory
+      config.layout = File.join(__dir__, 'support', 'test_layout.html.erb')
+    end
     allow_any_instance_of(Mail::SMTP).to receive(:deliver!)
     Timecop.freeze(Time.new(2001, 2, 3, 4, 5, 6))
     allow(STDOUT).to receive(:write)
   end
 
-  after { FileUtils.rm_rf(output_directory.to_s) }
+  after { FileUtils.rm_rf(preview_directory.to_s) }
 
   it 'has a version number' do
     expect(Postmortem::VERSION).not_to be nil
   end
-
-  its(:output_directory) { is_expected.to be_a Pathname }
 
   it 'intercepts ActionMailer immediate deliveries and saves to disk' do
     TestMailer.multipart_email.deliver_now

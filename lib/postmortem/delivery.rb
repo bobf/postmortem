@@ -7,7 +7,7 @@ module Postmortem
 
     def initialize(adapter)
       @adapter = adapter
-      @path = Postmortem.output_directory.join(filename)
+      @path = Postmortem.config.preview_directory.join(filename)
     end
 
     def record
@@ -18,6 +18,8 @@ module Postmortem
     private
 
     def filename
+      return "#{safe_subject}.html" unless Postmortem.config.timestamp
+
       "#{timestamp}__#{safe_subject}.html"
     end
 

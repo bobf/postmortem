@@ -7,9 +7,13 @@ module Postmortem
       @adapter = adapter
     end
 
+    def format_email_array(array)
+      array&.map { |email| %(<a href="mailto:#{email}">#{email}</a>) }&.join(', ')
+    end
+
     def content
       mail = @adapter
-      ERB.new(Postmortem.layout.read).result(binding)
+      ERB.new(Postmortem.config.layout.read).result(binding)
     end
   end
 end

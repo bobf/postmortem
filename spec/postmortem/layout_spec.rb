@@ -3,6 +3,14 @@
 RSpec.describe Postmortem::Layout do
   subject(:layout) { described_class.new(adapter) }
 
+  before do
+    Postmortem.configure do |config|
+      config.layout = File.expand_path(
+        File.join(__dir__, '..', 'support', 'test_layout.html.erb')
+      )
+    end
+  end
+
   let(:adapter) do
     instance_double(
       Postmortem::Adapters::Base,
