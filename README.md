@@ -1,14 +1,20 @@
 # Postmortem
 
-_Postmortem_ provides a simple and clean preview of all outgoing mails sent by your application.
+_Postmortem_ provides a simple and clean preview of all outgoing mails sent by your _Ruby_ application to make email development a little less painful.
 
-For every email your application sends a clearly-visible log entry is written with a temporary file that you can load in your browser to preview your email.
+Every time your application sends an email a clearly-visible log entry will be written which provides a path to a temporary file containing your preview.
+
+Take a look at a [live example](https://postmortem.surge.sh/) to see _Postmortem_ in action.
+
+_Postmortem_ should only be enabled in test or development environments.
 
 ## Features
 
-* Seamless integration with  _ActionMailer_.
+* Seamless integration with [_ActionMailer_](https://guides.rubyonrails.org/action_mailer_basics.html) and [_Pony_](https://github.com/benprew/pony) (with automatic delivery skipping when using _Pony_).
 * Preview email content as well as typical email headers (recipients, subject, etc.).
-* Email is loaded inside an `<iframe>` to ensure that no styles are inherited from the parent document and that the document is valid (i.e. no need to worry about nested `<html>` tags etc.
+* View rendered _HTML_, plaintext, or _HTML_ source with syntax highlighting (courtesy of [highlight.js](https://highlightjs.org/)).
+* Dual or single column view to suit your requirements.
+* Content is loaded inside an `<iframe>` to ensure document isolation and validity.
 
 ## Installation
 
@@ -30,24 +36,37 @@ Or install it yourself as:
 
 ## Usage
 
-_Postmortem_ automatically integrates with _Rails ActionMailer_. When an email is sent an entry will be visible in your application's log output.
+_Postmortem_ automatically integrates with _Rails ActionMailer_ and  _Pony_. When an email is sent an entry will be visible in your application's log output.
 
-Load the provided file in your browser to preview your email:
+The path to the preview file is based on the current time and the subject of the email. If you would prefer to use the same path for each email you can disable timestamps (see [configuration](#configuration)) and simply reload your browser every time an email is sent.
 
-![Example](doc/example.png)
+If you are using assets (images etc.) with _ActionMailer_ make sure to configure the asset host, e.g.:
+
+```ruby
+# config/environments/development.rb
+Rails.application.configure do
+  config.action_mailer.asset_host = 'http://localhost:3000'
+end
+```
+
+Load the provided file in your browser to preview your email.
+
+![Screenshot](doc/screenshot.png)
+
 
 ## Configuration
+<a name="configuration"></a>
 
 Configure _Postmortem_ by calling `Postmortem.configure`, e.g. in a _Rails_ initializer.
 
 ```ruby
 # config/initializers/postmortem.rb
 Postmortem.configure do |config|
-  # Colorize log output to improve visibility (default: true).
+  # Colorize output in logs (path to preview HTML file) to improve visibility (default: true).
   config.colorize = true
 
-  # Prefix all preview filenames with timestamp (default: true).
-  # Setting to false allows refreshing the same path to view the latest version.
+  # Prefix all preview filenames with a timestamp (default: true).
+  # Setting to false allows refreshing the same path in your browser to view the latest version.
   config.timestmap = true
 
   # Path to the Postmortem log file, where preview paths are written (default: STDOUT).
@@ -57,9 +76,12 @@ Postmortem.configure do |config|
   # The directory will be created if it does not exist.
   config.preview_directory = '/path/to/postmortem/directory'
 
-  # Provide a custom layout path (i.e. the page that wraps the email preview).
-  # If no extension provided `.html.erb` will be appended. See default layout for more info.
+  # Provide a custom layout path if the default interface does not suit you.
+  # See `layout/default.html.erb` for implementation reference.
   config.layout = '/path/to/layout'
+
+  # Skip delivery of emails when using Pony (default: true).
+  config.pony_skip_delivery = true
 end
 ```
 

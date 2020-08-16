@@ -1,6 +1,9 @@
 Date: Sat, 15 Aug 2020 14:56:57 +0100
-To: user@example.com
-Cc: cc@example.com
+From: from@example.com
+Reply-To: reply-to@example.com
+To: to@example.com
+Cc: cc1@example.com,
+ cc2@example.com
 Message-ID: <5f37e9a972299_5850fc855742@pangloss.mail>
 Subject: Multipart email
 Mime-Version: 1.0

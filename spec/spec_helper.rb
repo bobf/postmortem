@@ -19,6 +19,7 @@ ActiveJob::Base.logger = Logger.new(nil)
 Dir[File.join(__dir__, 'support', '**', '*.rb')].sort.each { |path| require path }
 RSpec.configure do |config|
   config.include FixtureHelper
+  config.before(:each) { Postmortem.configure }
   config.example_status_persistence_file_path = '.rspec_status'
   config.disable_monkey_patching!
   config.expect_with :rspec do |c|

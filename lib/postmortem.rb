@@ -7,6 +7,7 @@ require 'fileutils'
 require 'mail'
 require 'erb'
 require 'json'
+require 'cgi'
 
 require 'postmortem/version'
 require 'postmortem/adapters'
@@ -22,19 +23,17 @@ module Postmortem
     attr_reader :config
 
     def record_delivery(mail)
-      return if mail.empty?
-
       Delivery.new(mail)
               .tap(&:record)
               .tap { |delivery| log_delivery(delivery) }
     end
 
-    def try_load(*args)
+    def try_load(*args, plugin:)
       args.each { |arg| require arg }
     rescue LoadError
       false
     else
-      yield
+      require "postmortem/plugins/#{plugin}"
       true
     end
 
@@ -65,4 +64,5 @@ module Postmortem
 end
 
 Postmortem.configure
-Postmortem.try_load('action_mailer', 'active_support') { require 'postmortem/action_mailer' }
+Postmortem.try_load('action_mailer', 'active_support', plugin: 'action_mailer')
+Postmortem.try_load('pony', plugin: 'pony')

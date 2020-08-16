@@ -3,7 +3,7 @@
 module Postmortem
   # Provides interface for configuring Postmortem and implements sensible defaults.
   class Configuration
-    attr_writer :colorize, :timestamp
+    attr_writer :colorize, :timestamp, :pony_skip_delivery
     attr_accessor :log_path
 
     def timestamp
@@ -30,6 +30,10 @@ module Postmortem
 
     def preview_directory
       @preview_directory ||= Pathname.new(File.join(Dir.tmpdir, 'postmortem'))
+    end
+
+    def pony_skip_delivery
+      defined?(@pony_skip_delivery) ? @pony_skip_delivery : true
     end
   end
 end

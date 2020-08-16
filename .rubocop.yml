@@ -1,6 +1,7 @@
 Metrics/BlockLength:
   Exclude:
     - 'spec/**/*_spec.rb'
+    - 'postmortem.gemspec'
 
 Layout/EmptyLinesAroundAttributeAccessor:
   Enabled: true

@@ -6,15 +6,15 @@
           crossorigin="anonymous" />
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
           rel="stylesheet" />
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/styles/a11y-light.min.css"
+          integrity="sha512-zqEpZCxg7IVhGXy6EwdTb26cHl8IZzN/29Mj2/oSzkCKiLxHTi491mcC/K1NhShMWXu+WvfU5Z261XPc60lw7g=="
+          crossorigin="anonymous" />
     <style>
       .headers {
         height: 100%;
         max-width: 35rem;
         display: none;
-      }
-
-      .headers.visible {
-        display: block;
       }
 
       .content {
@@ -27,27 +27,21 @@
         background-color: #fff;
       }
 
-      #mail-iframe {
-        border-style: none;
-        width: 100%;
-        height: 100%;
-      }
-
       .preview {
+        display: none;
         background-color: #fff;
         padding: 2rem;
         height: 100%;
       }
 
-      .toolbar {
-         background-color: #fff;
-         text-align: right;
-         padding: 0.5rem 1rem;
+      .preview.source-view {
+        padding: 1.5rem;
       }
 
-      .column-switch {
-        font-size: 1.2rem;
-        cursor: pointer;
+      .preview iframe {
+        border-style: none;
+        width: 100%;
+        height: 100%;
       }
 
       .main-row {
@@ -56,16 +50,64 @@
 
       .container {
          height: 90vh;
+         margin-top: 2.8rem;
       }
 
       .container.full-width {
          max-width: 100%;
       }
+
+      .visible {
+        display: block;
+      }
+
+      .toolbar {
+         background-color: #fff;
+         text-align: right;
+         padding: 0.5rem 1rem;
+         position: fixed;
+         width: 100%;
+      }
+
+      .toolbar i {
+        font-size: 1.2rem;
+        cursor: pointer;
+        margin: 0 0.2rem;
+      }
+
+      .toolbar i.disabled {
+        cursor: default;
+        color: #ddd !important;
+      }
+
+      .toolbar .separator {
+        border-right: 1px solid #ccc;
+        margin-right: 0.5rem;
+        margin-left: 0.2rem;
+      }
     </style>
   </head>
   <body>
-    <div class="col toolbar">
-      <i class="fa fa-columns column-switch text-primary"></i>
+    <div class="toolbar">
+
+      <i data-toggle="tooltip"
+         title="<%= mail.html_body.nil? ? 'View HTML Part (Unavailable)' : 'View HTML Part' %>"
+         class="fa fa-code html-view-switch"></i>
+
+      <i data-toggle="tooltip"
+         title="<%= mail.html_body.nil? ? 'View HTML Source (Unavailable)' : 'View HTML Source' %>"
+         class="fa fa-file-code-o source-view-switch"></i>
+
+      <i data-toggle="tooltip"
+         title="<%= mail.text_body.nil? ? 'View Plaintext Part (Unavailable)' : 'View Plaintext Part' %>"
+         class="fa fa-file-text-o text-view-switch"></i>
+
+      <span class="separator"></span>
+
+      <i data-toggle="tooltip"
+         title="Toggle Email Headers"
+         class="fa fa-columns column-switch"></i>
+
     </div>
     <div class="content">
       <div class="container full-width">
@@ -105,38 +147,143 @@
               </tbody>
             </table>
           </div>
-          <div class="preview col">
-            <iframe id="mail-iframe"></iframe>
+          <div class="preview col html-view">
+            <iframe id="html-iframe"></iframe>
+          </div>
+          <div class="preview col text-view">
+            <iframe id="text-iframe"></iframe>
+          </div>
+          <div class="preview col source-view">
+            <iframe id="source-iframe"></iframe>
           </div>
         </div>
       </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+            integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+            integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+            integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+            crossorigin="anonymous"></script>
     <script>
       (function () {
-        var mailContent = <%= mail.html_body.to_json %>;
-        var iframeDocument = document.querySelector("#mail-iframe").contentDocument;
-        iframeDocument.write(mailContent);
-        iframeDocument.close();
+        var htmlIframeDocument = document.querySelector("#html-iframe").contentDocument;
+        htmlIframeDocument.write(<%= mail.html_body.to_json %>);
+        htmlIframeDocument.close();
 
-        var twoColumnView = true;
+        var textIframeDocument = document.querySelector("#text-iframe").contentDocument;
+        textIframeDocument.write('<pre>' + <%= ERB::Util.html_escape(mail.text_body).to_json %> + '</pre>');
+        textIframeDocument.close();
+
+        var sourceHighlightBundle = [
+           '<link rel="stylesheet"',
+           '     href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/styles/agate.min.css"',
+           '     integrity="sha512-mMMMPADD4HAIogAWZbv+WjZTC0itafUZNI0jQm48PMBTApXt11omF5jhS7U1kp3R2Pr6oGJ+JwQKiUkUwCQaUQ=="',
+           '     crossorigin="anonymous" />',
+           '<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"',
+           '        integrity="sha512-tHQeqtcNWlZtEh8As/4MmZ5qpy0wj04svWFK7MIzLmUVIzaHXS8eod9OmHxyBL1UET5Rchvw7Ih4ZDv5JojZww=="',
+           '        crossorigin="anonymous"></' + 'script>',
+           '<script>hljs.initHighlightingOnLoad();</' + 'script>',
+        ].join('\n');
+
+        var sourceIframeDocument = document.querySelector("#source-iframe").contentDocument;
+        sourceIframeDocument.write('<pre><code style="padding: 1rem;" class="language-html">' + <%= ERB::Util.html_escape(mail.html_body).to_json %> + '</code></pre>');
+        sourceIframeDocument.write(sourceHighlightBundle);
+        sourceIframeDocument.close();
+
+        var twoColumnView;
+        var hasHtml = <%= (!mail.html_body.nil?).to_json %>;
+        var hasText = <%= (!mail.text_body.nil?).to_json %>;
         var headers = document.querySelector('.headers');
         var columnSwitch = document.querySelector('.column-switch');
-        var container = document.querySelector('.container');
 
-        columnSwitch.onclick = function () {
-          twoColumnView = !twoColumnView;
+        var setColumnView = function (enableTwoColumnView) {
+          var container = document.querySelector('.container');
+          twoColumnView = enableTwoColumnView;
           if (twoColumnView) {
-            headers.classList.add('visible');
-            columnSwitch.classList.add('text-primary');
-            columnSwitch.classList.remove('text-secondary');
+            setVisible(headers, true);
+            setOn(columnSwitch);
             container.classList.add('full-width');
           } else {
-            headers.classList.remove('visible');
-            columnSwitch.classList.remove('text-primary');
-            columnSwitch.classList.add('text-secondary');
+            setVisible(headers, false);
+            setOff(columnSwitch);
             container.classList.remove('full-width');
           }
         };
+
+        var contexts = ['source', 'text', 'html'];
+
+        var views = {
+          source: document.querySelector('.source-view'),
+          html: document.querySelector('.html-view'),
+          text: document.querySelector('.text-view'),
+        };
+
+        var toolbar = {
+          source: document.querySelector('.source-view-switch'),
+          html: document.querySelector('.html-view-switch'),
+          text: document.querySelector('.text-view-switch'),
+        };
+
+        var setOn = function(element) {
+          element.classList.add('text-primary');
+          element.classList.remove('text-secondary');
+        };
+
+        var setOff = function(element) {
+          element.classList.add('text-secondary');
+          element.classList.remove('text-primary');
+        };
+
+        var setDisabled = function(element) {
+          element.classList.add('disabled');
+          element.classList.remove('text-secondary');
+          element.onclick = function () {};
+        };
+
+        var setVisible = function(element, visible) {
+          if (visible) {
+            element.classList.add('visible');
+          } else {
+            element.classList.remove('visible');
+          }
+        };
+
+        var setView = function(context) {
+          var key;
+          for (i = 0; i < contexts.length; i++) {
+            key = contexts[i];
+            if (key === context) {
+              setOn(toolbar[key]);
+              setVisible(views[key], true);
+            } else {
+              setOff(toolbar[key]);
+              setVisible(views[key], false);
+            }
+          }
+        };
+
+        toolbar.html.onclick   = function () { setView('html'); };
+        toolbar.text.onclick   = function () { setView('text'); };
+        toolbar.source.onclick = function () { setView('source'); };
+        columnSwitch.onclick   = function () { setColumnView(!twoColumnView); };
+
+        if (!hasText) setDisabled(toolbar.text);
+
+        if (hasHtml) {
+          setView('html');
+        } else {
+          setDisabled(toolbar.html);
+          setDisabled(toolbar.source);
+          setView('text');
+        }
+
+        setColumnView(true);
+
+        $('[data-toggle="tooltip"]').tooltip();
       })();
     </script>
   </body>

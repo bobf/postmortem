@@ -28,7 +28,7 @@ module Postmortem
     end
 
     def safe_subject
-      return 'no-subject' if @adapter.subject.empty?
+      return 'no-subject' if @adapter.subject.nil? || @adapter.subject.empty?
 
       @adapter.subject.tr(' ', '_').split('').select { |char| safe_chars.include?(char) }.join
     end

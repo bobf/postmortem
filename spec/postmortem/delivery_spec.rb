@@ -6,10 +6,12 @@ RSpec.describe Postmortem::Delivery do
   let(:mail) do
     instance_double(
       Postmortem::Adapters::Base,
-      subject: 'Email Subject',
+      subject: email_subject,
       html_body: '<div>My HTML content</div>'
     )
   end
+
+  let(:email_subject) { 'Email subject' }
 
   it { is_expected.to be_a described_class }
   its(:path) { is_expected.to be_a Pathname }
@@ -27,13 +29,25 @@ RSpec.describe Postmortem::Delivery do
 
   describe '#record' do
     subject(:record) { delivery.record }
+    let(:expected_content) { '<html><body><div>My HTML content</div></body></html>' }
+    let(:path) { Pathname.new(preview_directory).join(expected_filename) }
+    let(:expected_filename) { '2001-02-03_04-05-06__Email_Subject.html' }
+
     before { Timecop.freeze(Time.new(2001, 2, 3, 4, 5, 6)) }
     after { FileUtils.rm_rf(preview_directory) }
 
     it 'saves HTML to disk' do
       record
-      path = Pathname.new(preview_directory).join('2001-02-03_04-05-06__Email_Subject.html')
-      expect(path.read.strip).to eql '<html><body><div>My HTML content</div></body></html>'
+      expect(path.read.strip).to eql expected_content
+    end
+
+    context 'no subject' do
+      let(:email_subject) { nil }
+      let(:expected_filename) { '2001-02-03_04-05-06__no-subject.html' }
+      it 'uses a default subject' do
+        record
+        expect(path.read.strip).to eql expected_content
+      end
     end
   end
 end

@@ -28,6 +28,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'mail', '~> 2.7'
 
   spec.add_development_dependency 'actionmailer', '~> 6.0'
+  spec.add_development_dependency 'pony', '~> 1.13'
   spec.add_development_dependency 'rspec', '~> 3.9'
   spec.add_development_dependency 'rspec-its', '~> 1.3'
   spec.add_development_dependency 'rubocop', '~> 0.88.0'
