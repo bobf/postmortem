@@ -1,58 +1,143 @@
 <html>
   <head>
-  <link rel="stylesheet"
-        href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
-        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
-        crossorigin="anonymous">
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+          crossorigin="anonymous" />
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+          rel="stylesheet" />
+    <style>
+      .headers {
+        height: 100%;
+        max-width: 35rem;
+        display: none;
+      }
+
+      .headers.visible {
+        display: block;
+      }
+
+      .content {
+        background-color: #efefef;
+        padding: 1rem 2rem;
+        height: 100%;
+      }
+
+      .headers table {
+        background-color: #fff;
+      }
+
+      #mail-iframe {
+        border-style: none;
+        width: 100%;
+        height: 100%;
+      }
+
+      .preview {
+        background-color: #fff;
+        padding: 2rem;
+        height: 100%;
+      }
+
+      .toolbar {
+         background-color: #fff;
+         text-align: right;
+         padding: 0.5rem 1rem;
+      }
+
+      .column-switch {
+        font-size: 1.2rem;
+        cursor: pointer;
+      }
+
+      .main-row {
+        height: 100%;
+      }
+
+      .container {
+         height: 90vh;
+      }
+
+      .container.full-width {
+         max-width: 100%;
+      }
+    </style>
   </head>
-  <body style="background-color: #efefef; padding: 2rem; height: 100%">
-    <div class="container" style="height: 90vh; max-width: 100%;">
-      <div class="row" style="height: 100%">
-        <div class="col" style="height: 100%; max-width: 35rem">
-          <table class="table table-hover table table-bordered" style="background-color: #fff">
-            <tbody>
-              <tr>
-                <th>Subject:</th>
-                <td><%= mail.subject %></td>
-              </tr>
+  <body>
+    <div class="col toolbar">
+      <i class="fa fa-columns column-switch text-primary"></i>
+    </div>
+    <div class="content">
+      <div class="container full-width">
+        <div class="row main-row">
+          <div class="col headers visible">
+            <table class="table table-hover table table-bordered">
+              <tbody>
+                <tr>
+                  <th>Subject:</th>
+                  <td><%= mail.subject %></td>
+                </tr>
 
-              <tr>
-                <th style="width: 7rem;">From:</th>
-                <td><%= format_email_array(mail.from) %></td>
-              </tr>
+                <tr>
+                  <th style="width: 7rem;">From:</th>
+                  <td><%= format_email_array(mail.from) %></td>
+                </tr>
 
-              <tr>
-                <th>Reply-To:</th>
-                <td><%= format_email_array(mail.reply_to) %></td>
-              </tr>
+                <tr>
+                  <th>Reply-To:</th>
+                  <td><%= format_email_array(mail.reply_to) %></td>
+                </tr>
 
-              <tr>
-                <th>To:</th>
-                <td><%= format_email_array(mail.to) %></td>
-              </tr>
+                <tr>
+                  <th>To:</th>
+                  <td><%= format_email_array(mail.to) %></td>
+                </tr>
 
-              <tr>
-                <th>Cc:</th>
-                <td><%= format_email_array(mail.cc) %></td>
-              </tr>
+                <tr>
+                  <th>Cc:</th>
+                  <td><%= format_email_array(mail.cc) %></td>
+                </tr>
 
-              <tr>
-                <th>Bcc:</th>
-                <td><%= format_email_array(mail.bcc) %></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div style="background-color: #ffffff; padding: 2rem; height: 100%" class="col">
-          <iframe id="mail-iframe" src="" style="border-style: none; width: 100%; height: 100%"></iframe>
+                <tr>
+                  <th>Bcc:</th>
+                  <td><%= format_email_array(mail.bcc) %></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="preview col">
+            <iframe id="mail-iframe"></iframe>
+          </div>
         </div>
       </div>
     </div>
     <script>
-      var mailContent = <%= mail.html_body.to_json %>;
-      var iframeDocument = document.querySelector("#mail-iframe").contentDocument;
-      iframeDocument.write(mailContent);
-      iframeDocument.close();
+      (function () {
+        var mailContent = <%= mail.html_body.to_json %>;
+        var iframeDocument = document.querySelector("#mail-iframe").contentDocument;
+        iframeDocument.write(mailContent);
+        iframeDocument.close();
+
+        var twoColumnView = true;
+        var headers = document.querySelector('.headers');
+        var columnSwitch = document.querySelector('.column-switch');
+        var container = document.querySelector('.container');
+
+        columnSwitch.onclick = function () {
+          twoColumnView = !twoColumnView;
+          if (twoColumnView) {
+            headers.classList.add('visible');
+            columnSwitch.classList.add('text-primary');
+            columnSwitch.classList.remove('text-secondary');
+            container.classList.add('full-width');
+          } else {
+            headers.classList.remove('visible');
+            columnSwitch.classList.remove('text-primary');
+            columnSwitch.classList.add('text-secondary');
+            container.classList.remove('full-width');
+          }
+        };
+      })();
     </script>
   </body>
 </html>
