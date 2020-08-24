@@ -68,7 +68,7 @@ Postmortem.configure do |config|
 
   # Prefix all preview filenames with a timestamp (default: true).
   # Setting to false allows refreshing the same path in your browser to view the latest version.
-  config.timestmap = true
+  config.timestamp = true
 
   # Path to the Postmortem log file, where preview paths are written (default: STDOUT).
   config.log_path = '/path/to/postmortem.log'

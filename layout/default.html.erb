@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
   <head>
     <link rel="stylesheet"
@@ -12,9 +13,43 @@
           crossorigin="anonymous" />
     <style>
       .headers {
-        height: 100%;
-        max-width: 35rem;
+        width: 100%;
         display: none;
+      }
+
+      .row {
+        margin: 0;
+      }
+
+      #inbox {
+        overflow-y: scroll;
+        height: 100%;
+        max-height: 100%;
+        display: none;
+      }
+
+      #inbox.visible {
+        display: block;
+      }
+
+      #inbox li span.timestamp {
+        font-size: 0.8rem;
+        margin-top: -0.5rem;
+        margin-right: -0.5rem;
+        float: right;
+        color: #aaa;
+      }
+
+      #inbox li a:hover {
+        text-decoration: none;
+      }
+
+      #inbox li.active a {
+        color: #fff;
+      }
+
+      #inbox li.active span.timestamp {
+        color: #fff;
       }
 
       .content {
@@ -85,6 +120,16 @@
         margin-right: 0.5rem;
         margin-left: 0.2rem;
       }
+
+      .right-column {
+        display: flex;
+        flex-flow: column;
+        height: 100%;
+      }
+
+      #index-iframe {
+        display: none;
+      }
     </style>
   </head>
   <body>
@@ -105,60 +150,75 @@
       <span class="separator"></span>
 
       <i data-toggle="tooltip"
-         title="Toggle Email Headers"
+         title="Toggle Inbox"
          class="fa fa-columns column-switch"></i>
 
     </div>
     <div class="content">
       <div class="container full-width">
         <div class="row main-row">
-          <div class="col headers visible">
-            <table class="table table-hover table table-bordered">
-              <tbody>
-                <tr>
-                  <th>Subject:</th>
-                  <td><%= mail.subject %></td>
-                </tr>
-
-                <tr>
-                  <th style="width: 7rem;">From:</th>
-                  <td><%= format_email_array(mail.from) %></td>
-                </tr>
-
-                <tr>
-                  <th>Reply-To:</th>
-                  <td><%= format_email_array(mail.reply_to) %></td>
-                </tr>
-
-                <tr>
-                  <th>To:</th>
-                  <td><%= format_email_array(mail.to) %></td>
-                </tr>
-
-                <tr>
-                  <th>Cc:</th>
-                  <td><%= format_email_array(mail.cc) %></td>
-                </tr>
-
-                <tr>
-                  <th>Bcc:</th>
-                  <td><%= format_email_array(mail.bcc) %></td>
-                </tr>
-              </tbody>
-            </table>
+          <div id="inbox" class="col inbox">
           </div>
-          <div class="preview col html-view">
-            <iframe id="html-iframe"></iframe>
-          </div>
-          <div class="preview col text-view">
-            <iframe id="text-iframe"></iframe>
-          </div>
-          <div class="preview col source-view">
-            <iframe id="source-iframe"></iframe>
+
+          <div class="col right-column">
+            <div class="row headers visible">
+              <table class="table table-hover table table-bordered">
+                <tbody>
+                  <tr>
+                    <th>Subject:</th>
+                    <td><%= mail.subject %></td>
+                  </tr>
+
+                  <tr>
+                    <th style="width: 7rem;">From:</th>
+                    <td><%= format_email_array(mail.from) %></td>
+                  </tr>
+
+                  <% if mail.reply_to && !mail.reply_to.empty? %>
+                  <tr>
+                    <th>Reply-To:</th>
+                    <td><%= format_email_array(mail.reply_to) %></td>
+                  </tr>
+                  <% end %>
+
+                  <% if mail.to && !mail.to.empty? %>
+                  <tr>
+                    <th>To:</th>
+                    <td><%= format_email_array(mail.to) %></td>
+                  </tr>
+                  <% end %>
+
+                  <% if mail.cc && !mail.cc.empty? %>
+                  <tr>
+                    <th>Cc:</th>
+                    <td><%= format_email_array(mail.cc) %></td>
+                  </tr>
+                  <% end %>
+
+                  <% if mail.bcc && !mail.bcc.empty? %>
+                  <tr>
+                    <th>Bcc:</th>
+                    <td><%= format_email_array(mail.bcc) %></td>
+                  </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="preview row html-view">
+              <iframe id="html-iframe"></iframe>
+            </div>
+            <div class="preview row text-view">
+              <iframe id="text-iframe"></iframe>
+            </div>
+            <div class="preview row source-view">
+              <iframe id="source-iframe"></iframe>
+            </div>
           </div>
         </div>
       </div>
     </div>
+    <iframe id="index-iframe" src="index.html"></iframe>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
             integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
             crossorigin="anonymous"></script>
@@ -171,6 +231,7 @@
     <script>
       (function () {
         var htmlIframeDocument = document.querySelector("#html-iframe").contentDocument;
+        var indexIframe = document.querySelector("#index-iframe");
         htmlIframeDocument.write(<%= mail.html_body.to_json %>);
         htmlIframeDocument.close();
 
@@ -198,17 +259,19 @@
         var hasHtml = <%= (!mail.html_body.nil?).to_json %>;
         var hasText = <%= (!mail.text_body.nil?).to_json %>;
         var headers = document.querySelector('.headers');
+        var inbox = document.querySelector('#inbox');
         var columnSwitch = document.querySelector('.column-switch');
 
         var setColumnView = function (enableTwoColumnView) {
           var container = document.querySelector('.container');
           twoColumnView = enableTwoColumnView;
           if (twoColumnView) {
-            setVisible(headers, true);
+            console.log(inbox);
+            setVisible(inbox, true);
             setOn(columnSwitch);
             container.classList.add('full-width');
           } else {
-            setVisible(headers, false);
+            setVisible(inbox, false);
             setOff(columnSwitch);
             container.classList.remove('full-width');
           }
@@ -284,6 +347,26 @@
         setColumnView(true);
 
         $('[data-toggle="tooltip"]').tooltip();
+
+        renderInbox = function (mails) {
+
+          const html = mails.map(mail => {
+            const [subject, timestamp, path] = mail;
+            const parsedTimestamp = new Date(timestamp);
+            const timestampSpan = `<span class="timestamp">${parsedTimestamp.toLocaleString()}</span>`;
+            const classes = ['list-group-item'];
+            if (window.location.href.endsWith(path)) classes.push('active');
+            return `<li class="${classes.join(' ')}"><a href="${path}">${subject}</a>${timestampSpan}</li>`
+          });
+          $('#inbox').html('<ul class="list-group">' + html.join('\n') + '</ul>');
+        };
+
+        window.addEventListener('message', function (ev) {
+          renderInbox(ev.data);
+        });
+        setInterval(function () {
+          indexIframe.contentWindow.postMessage('HELO', '*');
+        }, 500);
       })();
     </script>
   </body>

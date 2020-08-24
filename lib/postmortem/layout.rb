@@ -3,8 +3,8 @@
 module Postmortem
   # Wraps provided body in an enclosing layout for presentation purposes.
   class Layout
-    def initialize(adapter)
-      @adapter = adapter
+    def initialize(mail)
+      @mail = mail
     end
 
     def format_email_array(array)
@@ -12,7 +12,7 @@ module Postmortem
     end
 
     def content
-      mail = @adapter
+      mail = @mail
       ERB.new(Postmortem.config.layout.read).result(binding)
     end
   end

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<body>
+<div id="index">
+### INDEX START
+<% encoded_index.each do |encoded| -%>
+<%= encoded %>
+<% end -%>
+### INDEX END
+</div>
+<script>
+window.addEventListener('message', function (ev) {
+  const filter = (line) => line !== '' && !line.startsWith('### INDEX');
+  const mails = document.querySelector('#index')
+                        .innerText
+                        .split('\n')
+                        .filter(filter)
+                        .map(line => JSON.parse(atob(line)));
+  ev.source.postMessage(mails, '*');
+});
+setInterval(function () {
+  window.location.reload();
+}, 500);
+</script>
+</body>
+</html>

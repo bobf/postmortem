@@ -14,6 +14,7 @@ require 'postmortem/adapters'
 require 'postmortem/delivery'
 require 'postmortem/layout'
 require 'postmortem/configuration'
+require 'postmortem/index'
 
 # HTML email inspection tool.
 module Postmortem

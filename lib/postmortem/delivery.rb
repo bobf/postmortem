@@ -3,34 +3,46 @@
 module Postmortem
   # Abstraction of an email delivery. Capable of writing email HTML body to disk.
   class Delivery
-    attr_reader :path
+    attr_reader :path, :index_path
 
-    def initialize(adapter)
-      @adapter = adapter
+    def initialize(mail)
+      @mail = mail
       @path = Postmortem.config.preview_directory.join(filename)
+      @index_path = Postmortem.config.preview_directory.join('index.html')
     end
 
     def record
       path.parent.mkpath
-      File.write(path, Layout.new(@adapter).content)
+      path.write(Layout.new(@mail).content)
+      index_path.write(Index.new(index_path, path, timestamp, subject).content)
     end
 
     private
 
     def filename
-      return "#{safe_subject}.html" unless Postmortem.config.timestamp
+      format = '%Y-%m-%d_%H-%M-%S'
+      timestamp_chunk = Postmortem.config.timestamp ? "#{timestamp.strftime(format)}__" : nil
+      token_chunk = Postmortem.config.token ? "#{token}__" : nil
 
-      "#{timestamp}__#{safe_subject}.html"
+      "#{timestamp_chunk}#{token_chunk}#{safe_subject}.html"
     end
 
     def timestamp
-      Time.now.strftime('%Y-%m-%d_%H-%M-%S')
+      @timestamp ||= Time.now
+    end
+
+    def token
+      SecureRandom.hex(4)
+    end
+
+    def subject
+      return 'no-subject' if @mail.subject.nil? || @mail.subject.empty?
+
+      @mail.subject
     end
 
     def safe_subject
-      return 'no-subject' if @adapter.subject.nil? || @adapter.subject.empty?
-
-      @adapter.subject.tr(' ', '_').split('').select { |char| safe_chars.include?(char) }.join
+      subject.tr(' ', '_').split('').select { |char| safe_chars.include?(char) }.join
     end
 
     def safe_chars
