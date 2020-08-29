@@ -7,6 +7,8 @@ RSpec.describe Postmortem do
     expect(Postmortem::VERSION).not_to be nil
   end
 
+  its(:root) { is_expected.to be_a Pathname }
+
   describe '.record_delivery' do
     let(:preview_directory) { File.join(Dir.tmpdir, 'postmortem-test') }
     let(:filename) { '2001-02-03_04-05-06__random-token__My_subject.html' }

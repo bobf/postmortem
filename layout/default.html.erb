@@ -12,124 +12,7 @@
           integrity="sha512-zqEpZCxg7IVhGXy6EwdTb26cHl8IZzN/29Mj2/oSzkCKiLxHTi491mcC/K1NhShMWXu+WvfU5Z261XPc60lw7g=="
           crossorigin="anonymous" />
     <style>
-      .headers {
-        width: 100%;
-        display: none;
-      }
-
-      .row {
-        margin: 0;
-      }
-
-      #inbox {
-        overflow-y: scroll;
-        height: 100%;
-        max-height: 100%;
-        display: none;
-      }
-
-      #inbox.visible {
-        display: block;
-      }
-
-      #inbox li span.timestamp {
-        font-size: 0.8rem;
-        margin-top: -0.5rem;
-        margin-right: -0.5rem;
-        float: right;
-        color: #aaa;
-      }
-
-      #inbox li a:hover {
-        text-decoration: none;
-      }
-
-      #inbox li.active a {
-        color: #fff;
-      }
-
-      #inbox li.active span.timestamp {
-        color: #fff;
-      }
-
-      .content {
-        background-color: #efefef;
-        padding: 1rem 2rem;
-        height: 100%;
-      }
-
-      .headers table {
-        background-color: #fff;
-      }
-
-      .preview {
-        display: none;
-        background-color: #fff;
-        padding: 2rem;
-        height: 100%;
-      }
-
-      .preview.source-view {
-        padding: 1.5rem;
-      }
-
-      .preview iframe {
-        border-style: none;
-        width: 100%;
-        height: 100%;
-      }
-
-      .main-row {
-        height: 100%;
-      }
-
-      .container {
-         height: 90vh;
-         margin-top: 2.8rem;
-      }
-
-      .container.full-width {
-         max-width: 100%;
-      }
-
-      .visible {
-        display: block;
-      }
-
-      .toolbar {
-         background-color: #fff;
-         text-align: right;
-         padding: 0.5rem 1rem;
-         position: fixed;
-         width: 100%;
-      }
-
-      .toolbar i {
-        font-size: 1.2rem;
-        cursor: pointer;
-        margin: 0 0.2rem;
-      }
-
-      .toolbar i.disabled {
-        cursor: default;
-        color: #ddd !important;
-      }
-
-      .toolbar .separator {
-        border-right: 1px solid #ccc;
-        margin-right: 0.5rem;
-        margin-left: 0.2rem;
-      }
-
-      .right-column {
-        display: flex;
-        flex-flow: column;
-        height: 100%;
-      }
-
-      #index-iframe {
-        display: none;
-      }
+      <%= styles %>
     </style>
   </head>
   <body>
@@ -152,6 +35,10 @@
       <i data-toggle="tooltip"
          title="Toggle Inbox"
          class="fa fa-columns column-switch"></i>
+
+      <i data-toggle="tooltip"
+         title="Toggle Headers"
+         class="fa fa-envelope-open-o headers-view-switch"></i>
 
     </div>
     <div class="content">
@@ -229,145 +116,12 @@
             integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
             crossorigin="anonymous"></script>
     <script>
-      (function () {
-        var htmlIframeDocument = document.querySelector("#html-iframe").contentDocument;
-        var indexIframe = document.querySelector("#index-iframe");
-        htmlIframeDocument.write(<%= mail.html_body.to_json %>);
-        htmlIframeDocument.close();
-
-        var textIframeDocument = document.querySelector("#text-iframe").contentDocument;
-        textIframeDocument.write('<pre>' + <%= ERB::Util.html_escape(mail.text_body).to_json %> + '</pre>');
-        textIframeDocument.close();
-
-        var sourceHighlightBundle = [
-           '<link rel="stylesheet"',
-           '     href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/styles/agate.min.css"',
-           '     integrity="sha512-mMMMPADD4HAIogAWZbv+WjZTC0itafUZNI0jQm48PMBTApXt11omF5jhS7U1kp3R2Pr6oGJ+JwQKiUkUwCQaUQ=="',
-           '     crossorigin="anonymous" />',
-           '<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"',
-           '        integrity="sha512-tHQeqtcNWlZtEh8As/4MmZ5qpy0wj04svWFK7MIzLmUVIzaHXS8eod9OmHxyBL1UET5Rchvw7Ih4ZDv5JojZww=="',
-           '        crossorigin="anonymous"></' + 'script>',
-           '<script>hljs.initHighlightingOnLoad();</' + 'script>',
-        ].join('\n');
-
-        var sourceIframeDocument = document.querySelector("#source-iframe").contentDocument;
-        sourceIframeDocument.write('<pre><code style="padding: 1rem;" class="language-html">' + <%= ERB::Util.html_escape(mail.html_body).to_json %> + '</code></pre>');
-        sourceIframeDocument.write(sourceHighlightBundle);
-        sourceIframeDocument.close();
-
-        var twoColumnView;
-        var hasHtml = <%= (!mail.html_body.nil?).to_json %>;
-        var hasText = <%= (!mail.text_body.nil?).to_json %>;
-        var headers = document.querySelector('.headers');
-        var inbox = document.querySelector('#inbox');
-        var columnSwitch = document.querySelector('.column-switch');
-
-        var setColumnView = function (enableTwoColumnView) {
-          var container = document.querySelector('.container');
-          twoColumnView = enableTwoColumnView;
-          if (twoColumnView) {
-            console.log(inbox);
-            setVisible(inbox, true);
-            setOn(columnSwitch);
-            container.classList.add('full-width');
-          } else {
-            setVisible(inbox, false);
-            setOff(columnSwitch);
-            container.classList.remove('full-width');
-          }
-        };
-
-        var contexts = ['source', 'text', 'html'];
-
-        var views = {
-          source: document.querySelector('.source-view'),
-          html: document.querySelector('.html-view'),
-          text: document.querySelector('.text-view'),
-        };
-
-        var toolbar = {
-          source: document.querySelector('.source-view-switch'),
-          html: document.querySelector('.html-view-switch'),
-          text: document.querySelector('.text-view-switch'),
-        };
-
-        var setOn = function(element) {
-          element.classList.add('text-primary');
-          element.classList.remove('text-secondary');
-        };
-
-        var setOff = function(element) {
-          element.classList.add('text-secondary');
-          element.classList.remove('text-primary');
-        };
-
-        var setDisabled = function(element) {
-          element.classList.add('disabled');
-          element.classList.remove('text-secondary');
-          element.onclick = function () {};
-        };
-
-        var setVisible = function(element, visible) {
-          if (visible) {
-            element.classList.add('visible');
-          } else {
-            element.classList.remove('visible');
-          }
-        };
-
-        var setView = function(context) {
-          var key;
-          for (i = 0; i < contexts.length; i++) {
-            key = contexts[i];
-            if (key === context) {
-              setOn(toolbar[key]);
-              setVisible(views[key], true);
-            } else {
-              setOff(toolbar[key]);
-              setVisible(views[key], false);
-            }
-          }
-        };
-
-        toolbar.html.onclick   = function () { setView('html'); };
-        toolbar.text.onclick   = function () { setView('text'); };
-        toolbar.source.onclick = function () { setView('source'); };
-        columnSwitch.onclick   = function () { setColumnView(!twoColumnView); };
-
-        if (!hasText) setDisabled(toolbar.text);
-
-        if (hasHtml) {
-          setView('html');
-        } else {
-          setDisabled(toolbar.html);
-          setDisabled(toolbar.source);
-          setView('text');
-        }
-
-        setColumnView(true);
-
-        $('[data-toggle="tooltip"]').tooltip();
-
-        renderInbox = function (mails) {
-
-          const html = mails.map(mail => {
-            const [subject, timestamp, path] = mail;
-            const parsedTimestamp = new Date(timestamp);
-            const timestampSpan = `<span class="timestamp">${parsedTimestamp.toLocaleString()}</span>`;
-            const classes = ['list-group-item'];
-            if (window.location.href.endsWith(path)) classes.push('active');
-            return `<li class="${classes.join(' ')}"><a href="${path}">${subject}</a>${timestampSpan}</li>`
-          });
-          $('#inbox').html('<ul class="list-group">' + html.join('\n') + '</ul>');
-        };
-
-        window.addEventListener('message', function (ev) {
-          renderInbox(ev.data);
-        });
-        setInterval(function () {
-          indexIframe.contentWindow.postMessage('HELO', '*');
-        }, 500);
-      })();
+      var mailBody = <%= mail.html_body.to_json %>;
+      var escapedTextBody = <%= ERB::Util.html_escape(mail.text_body).to_json %>;
+      var escapedHtmlBody = <%= ERB::Util.html_escape(mail.html_body).to_json %>;
+      var hasHtml = <%= (!mail.html_body.nil?).to_json %>;
+      var hasText = <%= (!mail.text_body.nil?).to_json %>;
+      <%= javascript %>
     </script>
   </body>
 </html>

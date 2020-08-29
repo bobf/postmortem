@@ -9,6 +9,10 @@ module Postmortem
         @adapted = adapted
       end
 
+      def html_body=(val)
+        @adapted[:html_body] = val
+      end
+
       %i[from reply_to to cc bcc subject text_body html_body].each do |method_name|
         define_method method_name do
           @adapted[method_name]

@@ -1,0 +1,140 @@
+.headers {
+  width: 100%;
+  display: none;
+}
+
+.row {
+  margin: 0;
+}
+
+#inbox {
+  overflow-y: scroll;
+  height: 100%;
+  max-height: 100%;
+  display: none;
+  width: 35rem;
+  max-width: 35rem;
+}
+
+#inbox.visible {
+  display: block;
+}
+
+#inbox li span.timestamp {
+  font-size: 0.8rem;
+  margin-right: -0.5rem;
+  float: right;
+  color: #aaa;
+  position: absolute;
+  right: 1rem;
+  top: 0.8rem;
+}
+
+#inbox li a {
+  text-decoration: none;
+  background-color: transparent;
+  max-width: 28rem;
+  overflow: hidden;
+  display: block;
+  white-space: nowrap;
+  text-overflow: ellipsis
+}
+
+#inbox li a .unread-icon {
+  color: #007bff;
+}
+
+#inbox li a:visited .unread-icon {
+  color: #ffffff00;
+}
+
+#inbox li a:hover {
+  text-decoration: none;
+}
+
+#inbox li.active a {
+  color: #fff;
+}
+
+#inbox li.active span.timestamp {
+  color: #fff;
+}
+
+.content {
+  background-color: #efefef;
+  padding: 1rem 2rem;
+  height: 100%;
+}
+
+.headers table {
+  background-color: #fff;
+}
+
+.preview {
+  display: none;
+  background-color: #fff;
+  padding: 2rem;
+  height: 100%;
+}
+
+.preview.source-view {
+  padding: 1.5rem;
+}
+
+.preview iframe {
+  border-style: none;
+  width: 100%;
+  height: 100%;
+}
+
+.main-row {
+  height: 100%;
+}
+
+.container {
+   height: 90vh;
+   margin-top: 2.8rem;
+}
+
+.container.full-width {
+   max-width: 100%;
+}
+
+.visible {
+  display: block;
+}
+
+.toolbar {
+   background-color: #fff;
+   text-align: right;
+   padding: 0.5rem 1rem;
+   position: fixed;
+   width: 100%;
+}
+
+.toolbar i {
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin: 0 0.2rem;
+}
+
+.toolbar i.disabled {
+  cursor: default;
+  color: #ddd !important;
+}
+
+.toolbar .separator {
+  border-right: 1px solid #ccc;
+  margin-right: 0.5rem;
+  margin-left: 0.2rem;
+}
+
+.right-column {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}
+
+#index-iframe {
+  display: none;
+}
