@@ -147,7 +147,7 @@
       const timestampSpan = `<span class="timestamp">${parsedTimestamp.toLocaleString()}</span>`;
       const classes = ['list-group-item'];
       if (window.location.href.endsWith(path)) classes.push('active');
-      return `<li class="${classes.join(' ')}"><a href="${path}">${subject}</a>${timestampSpan}</li>`
+      return `<li class="${classes.join(' ')}"><a title="${subject}" href="${path}">${subject}</a>${timestampSpan}</li>`
     });
     if (arrayIdentical(html, previousInbox)) return;
     previousInbox = html;
