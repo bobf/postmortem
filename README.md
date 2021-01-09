@@ -10,7 +10,8 @@ _Postmortem_ should only be enabled in test or development environments.
 
 ## Features
 
-* Seamless integration with [_ActionMailer_](https://guides.rubyonrails.org/action_mailer_basics.html) and [_Pony_](https://github.com/benprew/pony) (with automatic delivery skipping when using _Pony_).
+* Seamless integration with [_ActionMailer_](https://guides.rubyonrails.org/action_mailer_basics.html), [_Pony_](https://github.com/benprew/pony), [_Mail_](https://github.com/mikel/mail), etc.
+* Email deliveries are always intercepted (can be configured to pass through).
 * Preview email content as well as typical email headers (recipients, subject, etc.).
 * View rendered _HTML_, plaintext, or _HTML_ source with syntax highlighting (courtesy of [highlight.js](https://highlightjs.org/)).
 * Dual or single column view to suit your requirements.
@@ -22,7 +23,7 @@ Add the gem to your application's Gemfile:
 
 ```ruby
 group :development, :test do
-  gem 'postmortem', '~> 0.1.1'
+  gem 'postmortem', '~> 0.1.2'
 end
 ```
 
@@ -80,8 +81,8 @@ Postmortem.configure do |config|
   # See `layout/default.html.erb` for implementation reference.
   config.layout = '/path/to/layout'
 
-  # Skip delivery of emails when using Pony (default: true).
-  config.pony_skip_delivery = true
+  # Skip delivery of emails when using Pony, Mail, etc. (default: true).
+  config.mail_skip_delivery = true
 end
 ```
 

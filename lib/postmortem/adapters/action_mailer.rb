@@ -34,11 +34,11 @@ module Postmortem
       end
 
       def mail
-        @mail ||= Mail.new(@data[:mail])
+        @mail ||= ::Mail.new(@data[:mail])
       end
 
       def normalized_bcc
-        Mail.new(to: @data[:bcc]).to
+        ::Mail.new(to: @data[:bcc]).to
       end
 
       def text?

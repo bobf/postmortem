@@ -20,7 +20,7 @@ module Postmortem
       end
 
       def mail
-        @mail ||= Mail.new(@data.select { |key| keys.include?(key) })
+        @mail ||= ::Mail.new(@data.select { |key| keys.include?(key) })
       end
 
       def keys

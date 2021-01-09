@@ -1,33 +1,14 @@
 # frozen_string_literal: true
 
 RSpec.describe 'Pony plugin' do
-  before { allow_any_instance_of(Mail::SMTP).to receive(:deliver!) }
   before { allow(Postmortem).to receive(:record_delivery) }
 
   let(:send_email) do
-    Pony.mail(
-      to: 'user@example.com',
-      via: :smtp,
-      via_options: { address: 'smtp.example.com' }
-    )
+    Pony.mail(to: 'user@example.com')
   end
 
   context 'skip delivery is true' do
-    before { Postmortem.configure { |config| config.pony_skip_delivery = true } }
-
-    it 'intercepts Pony deliveries' do
-      expect(Postmortem).to receive(:record_delivery)
-      send_email
-    end
-
-    it 'intercepts Pony deliveries' do
-      expect_any_instance_of(Mail::SMTP).to_not receive(:deliver!)
-      send_email
-    end
-  end
-
-  context 'delivery enabled' do
-    before { Postmortem.configure { |config| config.pony_skip_delivery = false } }
+    before { Postmortem.configure { |config| config.mail_skip_delivery = true } }
 
     it 'intercepts Pony deliveries' do
       expect(Postmortem).to receive(:record_delivery)
@@ -35,7 +16,22 @@ RSpec.describe 'Pony plugin' do
     end
 
     it 'does not deliver emails' do
-      expect_any_instance_of(Mail::SMTP).to receive(:deliver!)
+      expect(Pony).to_not receive(:_original_mail)
+      send_email
+    end
+  end
+
+  context 'delivery enabled' do
+    before { Postmortem.configure { |config| config.mail_skip_delivery = false } }
+
+    it 'intercepts Pony deliveries' do
+      allow(Pony).to receive(:_original_mail)
+      expect(Postmortem).to receive(:record_delivery)
+      send_email
+    end
+
+    it 'delivers emails' do
+      expect(Pony).to receive(:_original_mail)
       send_email
     end
   end

@@ -66,3 +66,4 @@ end
 Postmortem.configure
 Postmortem.try_load('action_mailer', 'active_support', plugin: 'action_mailer')
 Postmortem.try_load('pony', plugin: 'pony')
+Postmortem.try_load('mail', plugin: 'mail')

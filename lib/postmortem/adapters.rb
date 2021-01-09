@@ -2,6 +2,7 @@
 
 require 'postmortem/adapters/base'
 require 'postmortem/adapters/action_mailer'
+require 'postmortem/adapters/mail'
 require 'postmortem/adapters/pony'
 
 module Postmortem
