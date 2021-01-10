@@ -1,13 +1,12 @@
 (function () {
+  let previousInbox;
+  let currentView;
+  let indexUuid;
+
   var htmlIframeDocument = document.querySelector("#html-iframe").contentDocument;
   var indexIframe = document.querySelector("#index-iframe");
-  htmlIframeDocument.write(mailBody);
-  htmlIframeDocument.close();
-
   var textIframeDocument = document.querySelector("#text-iframe").contentDocument;
-  textIframeDocument.write('<pre>' + escapedTextBody + '</pre>');
-  textIframeDocument.close();
-
+  var sourceIframeDocument = document.querySelector("#source-iframe").contentDocument;
   var sourceHighlightBundle = [
      '<link rel="stylesheet"',
      '     href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/styles/agate.min.css"',
@@ -19,10 +18,37 @@
      '<script>hljs.initHighlightingOnLoad();</' + 'script>',
   ].join('\n');
 
-  var sourceIframeDocument = document.querySelector("#source-iframe").contentDocument;
-  sourceIframeDocument.write('<pre><code style="padding: 1rem;" class="language-html">' + escapedHtmlBody + '</code></pre>');
-  sourceIframeDocument.write(sourceHighlightBundle);
-  sourceIframeDocument.close();
+  const initialize = () => {
+    loadMail(initialData);
+
+    let reloadIframeTimeout = setTimeout(() => indexIframe.src += '', 3000);
+    window.addEventListener('message', function (ev) {
+      clearTimeout(reloadIframeTimeout);
+      reloadIframeTimeout = setTimeout(() => indexIframe.src += '', 3000);
+      if (indexUuid !== ev.data.uuid) renderInbox(ev.data.mails);
+      indexUuid = ev.data.uuid;
+    });
+
+    setInterval(function () { indexIframe.contentWindow.postMessage('HELO', '*'); }, 1000);
+
+    toolbar.html.onclick    = function (ev) { setView('html', ev); };
+    toolbar.text.onclick    = function (ev) { setView('text', ev); };
+    toolbar.source.onclick  = function (ev) { setView('source', ev); };
+    toolbar.headers.onclick = function () { setHeadersView(!headersView); };
+    columnSwitch.onclick    = function () { setColumnView(!twoColumnView); };
+
+    if (hasHtml) {
+      setView('html');
+    } else {
+      setView('text');
+    }
+
+    setColumnView(true);
+    setHeadersView(true);
+
+    $('[data-toggle="tooltip"]').tooltip();
+  }
+
 
   var twoColumnView;
   var headersView;
@@ -84,7 +110,11 @@
   var setDisabled = function(element) {
     element.classList.add('disabled');
     element.classList.remove('text-secondary');
-    element.onclick = function () {};
+  };
+
+  var setEnabled = function(element) {
+    element.classList.remove('disabled');
+    element.classList.add('text-secondary');
   };
 
   var setVisible = function(element, visible) {
@@ -95,7 +125,8 @@
     }
   };
 
-  var setView = function(context) {
+  var setView = function(context, ev) {
+    if (ev && $(ev.target).hasClass('disabled')) return;
     var key;
     for (i = 0; i < contexts.length; i++) {
       key = contexts[i];
@@ -107,30 +138,8 @@
         setVisible(views[key], false);
       }
     }
+    currentView = context;
   };
-
-  toolbar.html.onclick    = function () { setView('html'); };
-  toolbar.text.onclick    = function () { setView('text'); };
-  toolbar.source.onclick  = function () { setView('source'); };
-  toolbar.headers.onclick = function () { setHeadersView(!headersView); };
-  columnSwitch.onclick    = function () { setColumnView(!twoColumnView); };
-
-  if (!hasText) setDisabled(toolbar.text);
-
-  if (hasHtml) {
-    setView('html');
-  } else {
-    setDisabled(toolbar.html);
-    setDisabled(toolbar.source);
-    setView('text');
-  }
-
-  setColumnView(true);
-  setHeadersView(true);
-
-  $('[data-toggle="tooltip"]').tooltip();
-
-  let previousInbox;
 
   const arrayIdentical = (a, b) => {
     if (a && !b) return false;
@@ -140,28 +149,77 @@
     return true;
   };
 
+  const htmlEscape = (html) => {
+    return $("<div></div>").text(html).html();
+  };
+
+  const $headersTemplate = $("#headers-template");
+
+  const loadHeaders = (mail) => {
+    $template = $headersTemplate.clone();
+    $('#headers').html($template.html());
+    ['subject', 'from', 'replyTo', 'to', 'cc', 'bcc'].forEach(item => {
+      const $item = $(`#email-${item}`)
+      $item.text(mail[item]);
+      if (!mail[item]) $item.parent().addClass('hidden');
+    });
+  };
+
+  const loadToolbar = (mail) => {
+    if (!mail.textBody) {
+      setDisabled(toolbar.text);
+      setView('html');
+    } else {
+      setDisabled(toolbar.text);
+    }
+
+    if (!mail.htmlBody) {
+      setDisabled(toolbar.html);
+      setDisabled(toolbar.source);
+      setView('text');
+    } else {
+      setEnabled(toolbar.html);
+      setEnabled(toolbar.source);
+    }
+    setView(currentView);
+  };
+
+  const loadMail = (mail) => {
+    htmlIframeDocument.open();
+    htmlIframeDocument.write(mail.htmlBody);
+    htmlIframeDocument.close();
+
+    textIframeDocument.open();
+    textIframeDocument.write(`<pre>${htmlEscape(mail.textBody)}</pre>`);
+    textIframeDocument.close();
+
+    sourceIframeDocument.open();
+    sourceIframeDocument.write(`<pre><code style="padding: 1rem;" class="language-html">${htmlEscape(mail.htmlBody)}</code></pre>`);
+    sourceIframeDocument.write(sourceHighlightBundle);
+    sourceIframeDocument.close();
+
+    loadHeaders(mail);
+    loadToolbar(mail);
+  };
+
   const renderInbox = function (mails) {
-    const html = mails.map(mail => {
-      const [subject, timestamp, path] = mail;
-      const parsedTimestamp = new Date(timestamp);
+    const html = mails.map((mail, index) => {
+      const parsedTimestamp = new Date(mail.timestamp);
       const timestampSpan = `<span class="timestamp">${parsedTimestamp.toLocaleString()}</span>`;
-      const classes = ['list-group-item'];
-      if (window.location.href.endsWith(path)) classes.push('active');
-      return `<li class="${classes.join(' ')}"><a title="${subject}" href="${path}">${subject}</a>${timestampSpan}</li>`
+      const classes = ['list-group-item', 'inbox-item'];
+      if (window.location.href.split('#')[0].endsWith(mail.path)) classes.push('active');
+      return `<li data-email-index="${index}" class="${classes.join(' ')}"><a title="${mail.subject}" href="javascript:void(0)">${mail.subject}</a>${timestampSpan}</li>`
     });
     if (arrayIdentical(html, previousInbox)) return;
     previousInbox = html;
     $('#inbox').html('<ul class="list-group">' + html.join('\n') + '</ul>');
+    $('.inbox-item').click((ev) => {
+      const $target = $(ev.currentTarget);
+      loadMail(mails[$target.data('email-index')].content);
+      $('.inbox-item').removeClass('active');
+      $target.addClass('active');
+    });
   };
 
-  let reloadIframeTimeout = setTimeout(() => indexIframe.src += '', 2000);
-  window.addEventListener('message', function (ev) {
-    clearTimeout(reloadIframeTimeout);
-    reloadIframeTimeout = setTimeout(() => indexIframe.src += '', 2000);
-    renderInbox(ev.data);
-  });
-  setInterval(function () {
-    indexIframe.contentWindow.postMessage('HELO', '*');
-  }, 500);
+  initialize();
 })();
-

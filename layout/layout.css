@@ -138,3 +138,11 @@
 #index-iframe {
   display: none;
 }
+
+.hidden {
+  display: none;
+}
+
+#toolbar-download:hover {
+  color: #007bff;
+}

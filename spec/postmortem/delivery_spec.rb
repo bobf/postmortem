@@ -7,7 +7,8 @@ RSpec.describe Postmortem::Delivery do
     instance_double(
       Postmortem::Adapters::Base,
       subject: email_subject,
-      html_body: '<div>My HTML content</div>'
+      html_body: '<div>My HTML content</div>',
+      serializable: {}
     )
   end
 

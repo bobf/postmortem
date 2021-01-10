@@ -32,7 +32,8 @@ RSpec.describe Postmortem do
       instance_double(
         Postmortem::Adapters::Base,
         subject: 'My subject',
-        html_body: '<div>My HTML content</div>'
+        html_body: '<div>My HTML content</div>',
+        serializable: {}
       )
     end
 

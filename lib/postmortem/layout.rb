@@ -25,6 +25,10 @@ module Postmortem
       default_layout_directory.join('layout.js').read
     end
 
+    def headers_template
+      default_layout_directory.join('headers_template.html').read
+    end
+
     private
 
     def default_layout_directory

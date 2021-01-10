@@ -3,11 +3,11 @@
 module Postmortem
   # Generates and parses an index of previously-sent emails.
   class Index
-    def initialize(index_path, mail_path, timestamp, subject)
+    def initialize(index_path, mail_path, timestamp, mail)
       @index_path = index_path
       @mail_path = mail_path
       @timestamp = timestamp.iso8601
-      @subject = subject
+      @mail = mail
     end
 
     def content
@@ -28,7 +28,12 @@ module Postmortem
     end
 
     def mail_data
-      [@subject || '(no subject)', @timestamp, @mail_path]
+      {
+        subject: @mail.subject || '(no subject)',
+        timestamp: @timestamp,
+        path: @mail_path,
+        content: @mail.serializable
+      }
     end
 
     def lines

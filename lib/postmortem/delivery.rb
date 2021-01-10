@@ -13,8 +13,9 @@ module Postmortem
 
     def record
       path.parent.mkpath
-      path.write(Layout.new(@mail).content)
-      index_path.write(Index.new(index_path, path, timestamp, subject).content)
+      content = Layout.new(@mail).content
+      path.write(content)
+      index_path.write(Index.new(index_path, path, timestamp, @mail).content)
     end
 
     private

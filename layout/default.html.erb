@@ -19,15 +19,15 @@
     <div class="toolbar">
 
       <i data-toggle="tooltip"
-         title="<%= mail.html_body.nil? ? 'View HTML Part (Unavailable)' : 'View HTML Part' %>"
-         class="fa fa-code html-view-switch"></i>
-
-      <i data-toggle="tooltip"
-         title="<%= mail.html_body.nil? ? 'View HTML Source (Unavailable)' : 'View HTML Source' %>"
+         title="View HTML Source"
          class="fa fa-file-code-o source-view-switch"></i>
 
       <i data-toggle="tooltip"
-         title="<%= mail.text_body.nil? ? 'View Plaintext Part (Unavailable)' : 'View Plaintext Part' %>"
+         title="View HTML Part"
+         class="fa fa-code html-view-switch"></i>
+
+      <i data-toggle="tooltip"
+         title="View Plaintext Part"
          class="fa fa-file-text-o text-view-switch"></i>
 
       <span class="separator"></span>
@@ -48,49 +48,7 @@
           </div>
 
           <div class="col right-column">
-            <div class="row headers visible">
-              <table class="table table-hover table table-bordered">
-                <tbody>
-                  <tr>
-                    <th>Subject:</th>
-                    <td><%= mail.subject %></td>
-                  </tr>
-
-                  <tr>
-                    <th style="width: 7rem;">From:</th>
-                    <td><%= format_email_array(mail.from) %></td>
-                  </tr>
-
-                  <% if mail.reply_to && !mail.reply_to.empty? %>
-                  <tr>
-                    <th>Reply-To:</th>
-                    <td><%= format_email_array(mail.reply_to) %></td>
-                  </tr>
-                  <% end %>
-
-                  <% if mail.to && !mail.to.empty? %>
-                  <tr>
-                    <th>To:</th>
-                    <td><%= format_email_array(mail.to) %></td>
-                  </tr>
-                  <% end %>
-
-                  <% if mail.cc && !mail.cc.empty? %>
-                  <tr>
-                    <th>Cc:</th>
-                    <td><%= format_email_array(mail.cc) %></td>
-                  </tr>
-                  <% end %>
-
-                  <% if mail.bcc && !mail.bcc.empty? %>
-                  <tr>
-                    <th>Bcc:</th>
-                    <td><%= format_email_array(mail.bcc) %></td>
-                  </tr>
-                  <% end %>
-                </tbody>
-              </table>
-            </div>
+            <div id="headers" class="row headers visible"></div>
 
             <div class="preview row html-view">
               <iframe id="html-iframe"></iframe>
@@ -115,10 +73,9 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
             integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
             crossorigin="anonymous"></script>
+    <%= headers_template %>
     <script>
-      var mailBody = <%= mail.html_body.to_json %>;
-      var escapedTextBody = <%= ERB::Util.html_escape(mail.text_body).to_json %>;
-      var escapedHtmlBody = <%= ERB::Util.html_escape(mail.html_body).to_json %>;
+      var initialData = <%= mail.serializable.to_json %>;
       var hasHtml = <%= (!mail.html_body.nil?).to_json %>;
       var hasText = <%= (!mail.text_body.nil?).to_json %>;
       <%= javascript %>
