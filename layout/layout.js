@@ -2,6 +2,7 @@
   let previousInbox;
   let currentView;
   let indexUuid;
+  let inboxInitialized = false;
 
   var htmlIframeDocument = document.querySelector("#html-iframe").contentDocument;
   var indexIframe = document.querySelector("#index-iframe");
@@ -22,6 +23,7 @@
     loadMail(initialData);
 
     let reloadIframeTimeout = setTimeout(() => indexIframe.src += '', 3000);
+
     window.addEventListener('message', function (ev) {
       clearTimeout(reloadIframeTimeout);
       reloadIframeTimeout = setTimeout(() => indexIframe.src += '', 3000);
@@ -43,7 +45,7 @@
       setView('text');
     }
 
-    setColumnView(true);
+    setColumnView(false);
     setHeadersView(true);
 
     $('[data-toggle="tooltip"]').tooltip();
@@ -200,6 +202,13 @@
 
     loadHeaders(mail);
     loadToolbar(mail);
+    loadDownloadLink();
+  };
+
+  const loadDownloadLink = () => {
+    const blob = new Blob([document.documentElement.innerHTML], { type: 'application/octet-stream' });
+    const uri = window.URL.createObjectURL(blob);
+    $("#download-link").attr('href', uri);
   };
 
   const renderInbox = function (mails) {
@@ -215,10 +224,18 @@
     $('#inbox').html('<ul class="list-group">' + html.join('\n') + '</ul>');
     $('.inbox-item').click((ev) => {
       const $target = $(ev.currentTarget);
-      loadMail(mails[$target.data('email-index')].content);
       $('.inbox-item').removeClass('active');
       $target.addClass('active');
+      setTimeout(() => {
+        loadMail(mails[$target.data('email-index')].content);
+      }, 0);
     });
+
+    if (!inboxInitialized) {
+      setColumnView(true);
+      setVisible(inbox, true);
+    }
+    inboxInitialized = true;
   };
 
   initialize();
