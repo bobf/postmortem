@@ -25,6 +25,14 @@ module Postmortem
       default_layout_directory.join('layout.js').read
     end
 
+    def css_dependencies
+      default_layout_directory.join('dependencies.css').read
+    end
+
+    def javascript_dependencies
+      default_layout_directory.join('dependencies.js').read
+    end
+
     def headers_template
       default_layout_directory.join('headers_template.html').read
     end
