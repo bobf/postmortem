@@ -66,10 +66,6 @@ Postmortem.configure do |config|
   # Colorize output in logs (path to preview HTML file) to improve visibility (default: true).
   config.colorize = true
 
-  # Prefix all preview filenames with a timestamp (default: true).
-  # Setting to false allows refreshing the same path in your browser to view the latest version.
-  config.timestamp = true
-
   # Path to the Postmortem log file, where preview paths are written (default: STDOUT).
   config.log_path = '/path/to/postmortem.log'
 

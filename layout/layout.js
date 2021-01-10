@@ -216,7 +216,8 @@
       const parsedTimestamp = new Date(mail.timestamp);
       const timestampSpan = `<span class="timestamp">${parsedTimestamp.toLocaleString()}</span>`;
       const classes = ['list-group-item', 'inbox-item'];
-      if (window.location.href.split('#')[0].endsWith(mail.path)) classes.push('active');
+      // FIXME: Highlight selected mail (via hash in URL)
+      // if (window.location.href.split('#')[0].endsWith(mail.path)) classes.push('active');
       return `<li data-email-index="${index}" class="${classes.join(' ')}"><a title="${mail.subject}" href="javascript:void(0)">${mail.subject}</a>${timestampSpan}</li>`
     });
     if (arrayIdentical(html, previousInbox)) return;

@@ -11,7 +11,7 @@ RSpec.describe Postmortem do
 
   describe '.record_delivery' do
     let(:preview_directory) { File.join(Dir.tmpdir, 'postmortem-test') }
-    let(:filename) { '2001-02-03_04-05-06__random-token__My_subject.html' }
+    let(:filename) { 'emails.html' }
     let(:path) { Pathname.new(preview_directory).join(filename) }
 
     before do
@@ -20,7 +20,6 @@ RSpec.describe Postmortem do
         config.layout = File.join(__dir__, 'support', 'test_layout.html.erb')
       end
       allow_any_instance_of(Mail::SMTP).to receive(:deliver!)
-      allow(SecureRandom).to receive(:hex) { 'random-token' }
       Timecop.freeze(Time.new(2001, 2, 3, 4, 5, 6))
       allow(STDOUT).to receive(:write)
       allow(delivery).to receive(:html_body=)

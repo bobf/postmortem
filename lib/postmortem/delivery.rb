@@ -7,7 +7,7 @@ module Postmortem
 
     def initialize(mail)
       @mail = mail
-      @path = Postmortem.config.preview_directory.join(filename)
+      @path = Postmortem.config.preview_directory.join('emails.html')
       @index_path = Postmortem.config.preview_directory.join('index.html')
     end
 
@@ -19,14 +19,6 @@ module Postmortem
     end
 
     private
-
-    def filename
-      format = '%Y-%m-%d_%H-%M-%S'
-      timestamp_chunk = Postmortem.config.timestamp ? "#{timestamp.strftime(format)}__" : nil
-      token_chunk = Postmortem.config.token ? "#{token}__" : nil
-
-      "#{timestamp_chunk}#{token_chunk}#{safe_subject}.html"
-    end
 
     def timestamp
       @timestamp ||= Time.now
