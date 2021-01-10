@@ -23,6 +23,7 @@ RSpec.describe Postmortem do
       allow(SecureRandom).to receive(:hex) { 'random-token' }
       Timecop.freeze(Time.new(2001, 2, 3, 4, 5, 6))
       allow(STDOUT).to receive(:write)
+      allow(delivery).to receive(:html_body=)
     end
 
     after { FileUtils.rm_rf(preview_directory.to_s) }
