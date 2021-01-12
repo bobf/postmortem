@@ -7,6 +7,17 @@
   margin: 0;
 }
 
+#title {
+  float: left;
+  padding: 0;
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+#title:hover {
+  color: #007bff !important;
+}
+
 #inbox {
   overflow-y: auto;
   height: 100%;
