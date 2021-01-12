@@ -172,7 +172,7 @@
       setDisabled(toolbar.text);
       setView('html');
     } else {
-      setDisabled(toolbar.text);
+      setEnabled(toolbar.text);
     }
 
     if (!mail.htmlBody) {
