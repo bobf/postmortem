@@ -20,4 +20,6 @@ RSpec.describe Postmortem::Layout do
 
   it { is_expected.to be_a described_class }
   its(:content) { is_expected.to eql "<html><body><div>My HTML content</div></body></html>\n" }
+  its(:styles) { is_expected.to include '.content {' }
+  its(:javascript) { is_expected.to include 'function ()' }
 end

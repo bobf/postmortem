@@ -3,12 +3,8 @@
 module Postmortem
   # Provides interface for configuring Postmortem and implements sensible defaults.
   class Configuration
-    attr_writer :colorize, :timestamp, :mail_skip_delivery
+    attr_writer :colorize, :mail_skip_delivery
     attr_accessor :log_path
-
-    def timestamp
-      defined?(@timestamp) ? @timestamp : true
-    end
 
     def colorize
       defined?(@colorize) ? @colorize : true

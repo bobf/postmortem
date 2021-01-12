@@ -14,6 +14,7 @@ require 'postmortem/adapters'
 require 'postmortem/delivery'
 require 'postmortem/layout'
 require 'postmortem/configuration'
+require 'postmortem/index'
 
 # HTML email inspection tool.
 module Postmortem
@@ -21,6 +22,10 @@ module Postmortem
 
   class << self
     attr_reader :config
+
+    def root
+      Pathname.new(__dir__).parent
+    end
 
     def record_delivery(mail)
       Delivery.new(mail)
@@ -40,6 +45,10 @@ module Postmortem
     def configure
       @config = Configuration.new
       yield @config if block_given?
+    end
+
+    def clear_inbox
+      config.preview_directory.rmtree
     end
 
     private

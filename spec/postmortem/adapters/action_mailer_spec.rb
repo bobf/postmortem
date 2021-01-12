@@ -10,7 +10,7 @@ RSpec.describe Postmortem::Adapters::ActionMailer do
       cc: 'cc@example.com',
       bcc: 'bcc@example.com',
       subject: 'Email Subject',
-      mail: fixture('multipart.eml')
+      mail: fixture('multipart.eml').read
     }
   end
 
