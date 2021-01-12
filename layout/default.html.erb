@@ -171,11 +171,11 @@
     <script>
       (function () {
         var htmlIframeDocument = document.querySelector("#html-iframe").contentDocument;
-        htmlIframeDocument.write(<%= mail.html_body.to_json %>);
+        htmlIframeDocument.write(<%= mail.html_body.to_s.to_json %>);
         htmlIframeDocument.close();
 
         var textIframeDocument = document.querySelector("#text-iframe").contentDocument;
-        textIframeDocument.write('<pre>' + <%= ERB::Util.html_escape(mail.text_body).to_json %> + '</pre>');
+        textIframeDocument.write('<pre>' + <%= ERB::Util.html_escape(mail.text_body.to_s).to_json %> + '</pre>');
         textIframeDocument.close();
 
         var sourceHighlightBundle = [
