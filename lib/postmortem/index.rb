@@ -15,12 +15,16 @@ module Postmortem
       ERB.new(File.read(template_path), nil, '-').result(binding)
     end
 
+    def size
+      encoded_index.size
+    end
+
     private
 
     def encoded_index
       return [encoded_mail] unless @index_path.file?
 
-      [encoded_mail] + lines[index(:start)..index(:end)]
+      @encoded_index ||= [encoded_mail] + lines[index(:start)..index(:end)]
     end
 
     def encoded_mail

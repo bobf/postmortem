@@ -71,6 +71,8 @@
   };
 
   var setColumnView = function (enableTwoColumnView) {
+    if (!inboxInitialized) return;
+
     var container = document.querySelector('.container');
     twoColumnView = enableTwoColumnView;
     if (twoColumnView) {
@@ -183,6 +185,8 @@
       setEnabled(toolbar.html);
       setEnabled(toolbar.source);
     }
+
+    setDisabled(columnSwitch);
     setView(currentView);
   };
 
@@ -212,12 +216,12 @@
   };
 
   const renderInbox = function (mails) {
-    const html = mails.map((mail, index) => {
+    const html = mails.map((mail, invertedIndex) => {
+      const index = (mails.length - 1) - invertedIndex;
       const parsedTimestamp = new Date(mail.timestamp);
       const timestampSpan = `<span class="timestamp">${parsedTimestamp.toLocaleString()}</span>`;
       const classes = ['list-group-item', 'inbox-item'];
-      // FIXME: Highlight selected mail (via hash in URL)
-      // if (window.location.href.split('#')[0].endsWith(mail.path)) classes.push('active');
+      if (window.location.hash === '#' + index) classes.push('active');
       return `<li data-email-index="${index}" class="${classes.join(' ')}"><a title="${mail.subject}" href="javascript:void(0)">${mail.subject}</a>${timestampSpan}</li>`
     });
     if (arrayIdentical(html, previousInbox)) return;
@@ -225,14 +229,15 @@
     $('#inbox').html('<ul class="list-group">' + html.join('\n') + '</ul>');
     $('.inbox-item').click((ev) => {
       const $target = $(ev.currentTarget);
+      const index = $target.data('email-index');
       $('.inbox-item').removeClass('active');
       $target.addClass('active');
-      setTimeout(() => {
-        loadMail(mails[$target.data('email-index')].content);
-      }, 0);
+      window.location.hash = index;
+      setTimeout(() => loadMail(mails[index].content), 0);
     });
 
     if (!inboxInitialized) {
+      setEnabled(columnSwitch);
       setColumnView(true);
       setVisible(inbox, true);
     }

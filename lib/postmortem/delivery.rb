@@ -15,10 +15,14 @@ module Postmortem
       path.parent.mkpath
       content = Layout.new(@mail).content
       path.write(content)
-      index_path.write(Index.new(index_path, path, timestamp, @mail).content)
+      index_path.write(index.content)
     end
 
     private
+
+    def index
+      @index ||= Index.new(index_path, path, timestamp, @mail)
+    end
 
     def timestamp
       @timestamp ||= Time.now

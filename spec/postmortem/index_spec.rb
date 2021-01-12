@@ -30,6 +30,7 @@ RSpec.describe Postmortem::Index do
     its(:content) { is_expected.to include encoded_path('/example/mail/2') }
     its(:content) { is_expected.to include "### INDEX START\n" }
     its(:content) { is_expected.to include "### INDEX END\n" }
+    its(:size) { is_expected.to eql 3 }
   end
 
   context 'index does not exist' do
