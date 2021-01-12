@@ -24,7 +24,7 @@ module Postmortem
     end
 
     def encoded_mail
-      Base64.urlsafe_encode64(mail_data.to_json)
+      Base64.encode64(mail_data.to_json).split("\n").join
     end
 
     def mail_data

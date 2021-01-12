@@ -25,6 +25,14 @@ module Postmortem
         end
       end
 
+      def html_body
+        @adapted[:html_body].to_s
+      end
+
+      def text_body
+        @adapted[:text_body].to_s
+      end
+
       private
 
       def adapted

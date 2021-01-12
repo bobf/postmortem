@@ -46,7 +46,7 @@ module Postmortem
     def with_inlined_images(body)
       parsed = Nokogiri::HTML.parse(body)
       parsed.css('img').each do |img|
-        uri = URI(img['src'])
+        uri = try_uri(img['src'])
         next unless local_file?(uri)
 
         path = located_image(uri)
@@ -56,11 +56,18 @@ module Postmortem
     end
 
     def local_file?(uri)
+      return false if uri.nil?
       return true if uri.host.nil?
       return true if /^www\.example\.[a-z]+$/.match(uri.host)
       return true if %w[127.0.0.1 localhost].include?(uri.host)
 
       false
+    end
+
+    def try_uri(uri)
+      URI(uri)
+    rescue URI::InvalidURIError
+      nil
     end
 
     def located_image(uri)
