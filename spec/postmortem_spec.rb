@@ -7,9 +7,12 @@ RSpec.describe Postmortem do
     expect(Postmortem::VERSION).not_to be nil
   end
 
+  its(:root) { is_expected.to be_a Pathname }
+
   describe '.record_delivery' do
     let(:preview_directory) { File.join(Dir.tmpdir, 'postmortem-test') }
-    let(:path) { Pathname.new(preview_directory).join('2001-02-03_04-05-06__My_subject.html') }
+    let(:filename) { 'emails.html' }
+    let(:path) { Pathname.new(preview_directory).join(filename) }
 
     before do
       Postmortem.configure do |config|
@@ -19,6 +22,7 @@ RSpec.describe Postmortem do
       allow_any_instance_of(Mail::SMTP).to receive(:deliver!)
       Timecop.freeze(Time.new(2001, 2, 3, 4, 5, 6))
       allow(STDOUT).to receive(:write)
+      allow(delivery).to receive(:html_body=)
     end
 
     after { FileUtils.rm_rf(preview_directory.to_s) }
@@ -27,7 +31,8 @@ RSpec.describe Postmortem do
       instance_double(
         Postmortem::Adapters::Base,
         subject: 'My subject',
-        html_body: '<div>My HTML content</div>'
+        html_body: '<div>My HTML content</div>',
+        serializable: {}
       )
     end
 
