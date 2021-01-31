@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<body>
+<div data-uuid="<%= uuid %>" id="identity">
+</div>
+<script>
+  window.addEventListener('message', function (ev) {
+    const identity = document.querySelector('#identity');
+    const uuid = identity.dataset.uuid;
+    const type = 'identity';
+    ev.source.postMessage({ uuid, type }, '*');
+  });
+
+  setInterval(function () {
+    window.location.reload();
+  }, 3000);
+
+</script>
+</body>
+</html>

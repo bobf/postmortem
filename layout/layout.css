@@ -147,7 +147,7 @@
   height: 100%;
 }
 
-#index-iframe {
+#index-iframe, #identity-iframe {
   display: none;
 }
 

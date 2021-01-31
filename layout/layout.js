@@ -1,11 +1,14 @@
 (function () {
   let previousInbox;
   let currentView;
+  let reloadIdentityIframeTimeout;
+  let identityUuid;
   let indexUuid;
   let inboxInitialized = false;
 
   var htmlIframeDocument = document.querySelector("#html-iframe").contentDocument;
   var indexIframe = document.querySelector("#index-iframe");
+  var identityIframe = document.querySelector("#identity-iframe");
   var textIframeDocument = document.querySelector("#text-iframe").contentDocument;
   var sourceIframeDocument = document.querySelector("#source-iframe").contentDocument;
   var sourceHighlightBundle = [
@@ -22,16 +25,21 @@
   const initialize = () => {
     loadMail(initialData);
 
-    let reloadIframeTimeout = setTimeout(() => indexIframe.src += '', 3000);
+    reloadIdentityIframeTimeout = setTimeout(() => identityIframe.src += '', 3000);
 
     window.addEventListener('message', function (ev) {
-      clearTimeout(reloadIframeTimeout);
-      reloadIframeTimeout = setTimeout(() => indexIframe.src += '', 3000);
-      if (indexUuid !== ev.data.uuid) renderInbox(ev.data.mails);
-      indexUuid = ev.data.uuid;
+      switch (ev.data.type) {
+        case 'index':
+          renderInbox(ev.data.uuid, ev.data.mails);
+          break;
+        case 'identity':
+          compareIdentity(ev.data.uuid);
+          break;
+      };
     });
 
     setInterval(function () { indexIframe.contentWindow.postMessage('HELO', '*'); }, 1000);
+    setInterval(function () { identityIframe.contentWindow.postMessage('HELO', '*'); }, 1000);
 
     toolbar.html.onclick    = function (ev) { setView('html', ev); };
     toolbar.text.onclick    = function (ev) { setView('text', ev); };
@@ -215,7 +223,17 @@
     $("#download-link").attr('href', uri);
   };
 
-  const renderInbox = function (mails) {
+  const compareIdentity = (uuid) => {
+    clearTimeout(reloadIdentityIframeTimeout);
+    reloadIdentityIframeTimeout = setTimeout(() => identityIframe.src += '', 3000);
+    if (identityUuid !== uuid) indexIframe.src += '';
+    identityUuid = uuid;
+  };
+
+  const renderInbox = (uuid, mails) => {
+    if (uuid === indexUuid) {
+      return;
+    }
     const html = mails.map((mail, invertedIndex) => {
       const index = (mails.length - 1) - invertedIndex;
       const parsedTimestamp = new Date(mail.timestamp);
@@ -242,6 +260,7 @@
       setVisible(inbox, true);
     }
     inboxInitialized = true;
+    indexUuid = uuid;
   };
 
   initialize();

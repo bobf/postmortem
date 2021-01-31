@@ -3,10 +3,9 @@
 module Postmortem
   # Generates and parses an index of previously-sent emails.
   class Index
-    def initialize(index_path, mail_path, timestamp, mail)
+    def initialize(index_path, mail_path, mail)
       @index_path = index_path
       @mail_path = mail_path
-      @timestamp = timestamp.iso8601
       @mail = mail
     end
 
@@ -21,6 +20,14 @@ module Postmortem
 
     private
 
+    def uuid
+      @uuid ||= SecureRandom.uuid
+    end
+
+    def timestamp
+      Time.now.iso8601
+    end
+
     def encoded_index
       return [encoded_mail] unless @index_path.file?
 
@@ -34,7 +41,7 @@ module Postmortem
     def mail_data
       {
         subject: @mail.subject || '(no subject)',
-        timestamp: @timestamp,
+        timestamp: timestamp,
         path: @mail_path,
         content: @mail.serializable
       }
@@ -54,7 +61,7 @@ module Postmortem
     end
 
     def template_path
-      File.expand_path(File.join(__dir__, '..', '..', 'layout', 'index.html.erb'))
+      File.expand_path(File.join(__dir__, '..', '..', 'layout', 'postmortem_index.html.erb'))
     end
   end
 end

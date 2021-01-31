@@ -32,8 +32,9 @@ RSpec.describe Postmortem::Delivery do
   describe '#record' do
     subject(:record) { delivery.record }
     let(:expected_content) { '<html><body><div>My HTML content</div></body></html>' }
-    let(:index_path) { Pathname.new(preview_directory).join('index.html') }
-    let(:path) { Pathname.new(preview_directory).join('emails.html') }
+    let(:index_path) { Pathname.new(preview_directory).join('postmortem_index.html') }
+    let(:identity_path) { Pathname.new(preview_directory).join('postmortem_identity.html') }
+    let(:path) { Pathname.new(preview_directory).join('index.html') }
 
     before { Timecop.freeze(Time.new(2001, 2, 3, 4, 5, 6)) }
     after { FileUtils.rm_rf(preview_directory) }
@@ -41,6 +42,11 @@ RSpec.describe Postmortem::Delivery do
     it 'saves view HTML to disk' do
       record
       expect(path.read.strip).to eql expected_content
+    end
+
+    it 'writes id HTML file when not present' do
+      record
+      expect(identity_path).to be_file
     end
 
     it 'creates index HTML file when not present' do
@@ -52,7 +58,7 @@ RSpec.describe Postmortem::Delivery do
       record
       Timecop.freeze(Time.new(2001, 2, 3, 4, 5, 7))
       described_class.new(mail).record
-      expect(index_path.read).to include fixture('index.html').read
+      expect(index_path.read).to include fixture('postmortem_index.html').read
     end
   end
 end

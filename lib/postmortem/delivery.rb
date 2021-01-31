@@ -7,8 +7,9 @@ module Postmortem
 
     def initialize(mail)
       @mail = mail
-      @path = Postmortem.config.preview_directory.join('emails.html')
-      @index_path = Postmortem.config.preview_directory.join('index.html')
+      @path = Postmortem.config.preview_directory.join('index.html')
+      @index_path = Postmortem.config.preview_directory.join('postmortem_index.html')
+      @identity_path = Postmortem.config.preview_directory.join('postmortem_identity.html')
     end
 
     def record
@@ -16,20 +17,17 @@ module Postmortem
       content = Layout.new(@mail).content
       path.write(content)
       index_path.write(index.content)
+      @identity_path.write(identity.content)
     end
 
     private
 
     def index
-      @index ||= Index.new(index_path, path, timestamp, @mail)
+      @index ||= Index.new(index_path, path, @mail)
     end
 
-    def timestamp
-      @timestamp ||= Time.now
-    end
-
-    def token
-      SecureRandom.hex(4)
+    def identity
+      @identity ||= Identity.new
     end
 
     def subject

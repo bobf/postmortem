@@ -11,7 +11,7 @@ RSpec.describe Postmortem do
 
   describe '.record_delivery' do
     let(:preview_directory) { File.join(Dir.tmpdir, 'postmortem-test') }
-    let(:filename) { 'emails.html' }
+    let(:filename) { 'index.html' }
     let(:path) { Pathname.new(preview_directory).join(filename) }
 
     before do

@@ -1,10 +1,9 @@
 # frozen_string_literal: true
 
 RSpec.describe Postmortem::Index do
-  subject(:index) { described_class.new(index_path, mail_path, timestamp, email) }
+  subject(:index) { described_class.new(index_path, mail_path, email) }
 
   before { Timecop.freeze(Time.new(2001, 2, 3, 4, 5, 6)) }
-  let(:timestamp) { Time.now }
   let(:email) do
     instance_double(Postmortem::Adapters::Base, subject: email_subject, serializable: {})
   end
@@ -40,6 +39,6 @@ RSpec.describe Postmortem::Index do
   end
 
   def encoded_path(path)
-    Base64.urlsafe_encode64([email_subject, timestamp.iso8601, path, encoded_email].to_json)
+    Base64.urlsafe_encode64([email_subject, Time.now.iso8601, path, encoded_email].to_json)
   end
 end
