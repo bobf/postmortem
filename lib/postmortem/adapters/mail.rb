@@ -10,7 +10,7 @@ module Postmortem
         %i[from reply_to to cc bcc subject]
           .map { |field| [field, @data.public_send(field)] }
           .to_h
-          .merge({ text_body: @data.text_part, html_body: @data.html_part })
+          .merge({ text_body: @data.text_part&.decoded, html_body: @data.html_part&.decoded })
       end
 
       def mail
