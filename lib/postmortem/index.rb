@@ -35,7 +35,7 @@ module Postmortem
     end
 
     def encoded_mail
-      Base64.encode64(mail_data.to_json).split("\n").join
+      Base64.encode64(mail_data.merge(id: Digest::MD5.hexdigest(mail_data.to_json)).to_json).split("\n").join
     end
 
     def mail_data

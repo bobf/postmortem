@@ -8,6 +8,7 @@ require 'mail'
 require 'erb'
 require 'json'
 require 'cgi'
+require 'digest'
 
 require 'postmortem/version'
 require 'postmortem/adapters'

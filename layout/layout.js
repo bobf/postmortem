@@ -234,24 +234,25 @@
     if (uuid === indexUuid) {
       return;
     }
-    const html = mails.map((mail, invertedIndex) => {
-      const index = (mails.length - 1) - invertedIndex;
+    const mailsById = {};
+    const html = mails.map((mail, index) => {
       const parsedTimestamp = new Date(mail.timestamp);
       const timestampSpan = `<span class="timestamp">${parsedTimestamp.toLocaleString()}</span>`;
       const classes = ['list-group-item', 'inbox-item'];
-      if (window.location.hash === '#' + index) classes.push('active');
-      return `<li data-email-index="${index}" class="${classes.join(' ')}"><a title="${mail.subject}" href="javascript:void(0)">${mail.subject}</a>${timestampSpan}</li>`
+      if (window.location.hash === '#' + mail.id) classes.push('active');
+      mailsById[mail.id] = mail;
+      return `<li data-email-id="${mail.id}" class="${classes.join(' ')}"><a title="${mail.subject}" href="javascript:void(0)">${mail.subject}</a>${timestampSpan}</li>`
     });
     if (arrayIdentical(html, previousInbox)) return;
     previousInbox = html;
     $('#inbox').html('<ul class="list-group">' + html.join('\n') + '</ul>');
     $('.inbox-item').click((ev) => {
       const $target = $(ev.currentTarget);
-      const index = $target.data('email-index');
+      const id = $target.data('email-id');
       $('.inbox-item').removeClass('active');
       $target.addClass('active');
-      window.location.hash = index;
-      setTimeout(() => loadMail(mails[index].content), 0);
+      window.location.hash = id;
+      setTimeout(() => loadMail(mailsById[id].content), 0);
     });
 
     if (!inboxInitialized) {
