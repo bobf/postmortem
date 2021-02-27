@@ -42,22 +42,49 @@
   top: 0.8rem;
 }
 
+#inbox ul {
+  list-style-type: none;
+}
+
+.list-group-item {
+  padding-left: 0.75rem;
+}
+
+#inbox li .unread-icon, #inbox li .read-icon {
+  padding-right: 0.75rem;
+  font-size: 1.2rem;
+}
+
+#inbox li .read-icon {
+  opacity: 0.1;
+  display: inline;
+}
+
+#inbox li.active .read-icon {
+  color: #fff;
+  opacity: 0.3;
+}
+
+#inbox li .unread-icon {
+  display: none;
+}
+
+#inbox li.unread .read-icon {
+  display: none;
+}
+
+#inbox li.unread .unread-icon {
+  display: inline;
+}
+
 #inbox li a {
   text-decoration: none;
   background-color: transparent;
-  max-width: 22rem;
+  max-width: 23rem;
   overflow: hidden;
   display: block;
   white-space: nowrap;
   text-overflow: ellipsis
-}
-
-#inbox li a .unread-icon {
-  color: #007bff;
-}
-
-#inbox li a:visited .unread-icon {
-  color: #ffffff00;
 }
 
 #inbox li a:hover {

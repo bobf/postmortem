@@ -6,12 +6,12 @@
   let indexUuid;
   let inboxInitialized = false;
 
-  var htmlIframeDocument = document.querySelector("#html-iframe").contentDocument;
-  var indexIframe = document.querySelector("#index-iframe");
-  var identityIframe = document.querySelector("#identity-iframe");
-  var textIframeDocument = document.querySelector("#text-iframe").contentDocument;
-  var sourceIframeDocument = document.querySelector("#source-iframe").contentDocument;
-  var sourceHighlightBundle = [
+  const htmlIframeDocument = document.querySelector("#html-iframe").contentDocument;
+  const indexIframe = document.querySelector("#index-iframe");
+  const identityIframe = document.querySelector("#identity-iframe");
+  const textIframeDocument = document.querySelector("#text-iframe").contentDocument;
+  const sourceIframeDocument = document.querySelector("#source-iframe").contentDocument;
+  const sourceHighlightBundle = [
      '<link rel="stylesheet"',
      '     href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/styles/agate.min.css"',
      '     integrity="sha512-mMMMPADD4HAIogAWZbv+WjZTC0itafUZNI0jQm48PMBTApXt11omF5jhS7U1kp3R2Pr6oGJ+JwQKiUkUwCQaUQ=="',
@@ -21,6 +21,8 @@
      '        crossorigin="anonymous"></' + 'script>',
      '<script>hljs.initHighlightingOnLoad();</' + 'script>',
   ].join('\n');
+
+  const storage = window.localStorage;
 
   const initialize = () => {
     loadMail(initialData);
@@ -199,13 +201,6 @@
   };
 
   const loadMail = (mail) => {
-    window.location.hash = mail.id;
-
-    const $target = $(`li[data-email-id="${mail.id}"]`);
-    console.log(mail.id, $target);
-    $('.inbox-item').removeClass('active');
-    $target.addClass('active');
-
     htmlIframeDocument.open();
     htmlIframeDocument.write(mail.htmlBody);
     htmlIframeDocument.close();
@@ -222,6 +217,27 @@
     loadHeaders(mail);
     loadToolbar(mail);
     loadDownloadLink();
+
+    highlightMail(mail);
+    markAsRead(mail);
+  };
+
+  const markAsRead = (mail) => {
+    storage.setItem(mail.id, 'read');
+  };
+
+  const isNewMail = (mail) => {
+    if (!storage.getItem(mail.id)) return true;
+
+    return false;
+  };
+
+  const highlightMail = (mail) => {
+    window.location.hash = mail.id;
+    const $target = $(`li[data-email-id="${mail.id}"]`);
+    $('.inbox-item').removeClass('active');
+    $target.addClass('active');
+    $target.removeClass('unread');
   };
 
   const loadDownloadLink = () => {
@@ -247,8 +263,14 @@
       const timestampSpan = `<span class="timestamp">${parsedTimestamp.toLocaleString()}</span>`;
       const classes = ['list-group-item', 'inbox-item'];
       if (window.location.hash === '#' + mail.id) classes.push('active');
+      if (isNewMail(mail)) classes.push('unread');
       mailsById[mail.id] = mail;
-      return `<li data-email-id="${mail.id}" class="${classes.join(' ')}"><a title="${mail.subject}" href="javascript:void(0)">${mail.subject}</a>${timestampSpan}</li>`
+      return [`<li data-email-id="${mail.id}" class="${classes.join(' ')}">`,
+              `<a title="${mail.subject}" href="javascript:void(0)">`,
+              `<i class="fa fa-envelope-open read-icon"></i>`,
+              `<i class="fa fa-envelope unread-icon"></i>${mail.subject}`,
+              `</a>`,
+              `${timestampSpan}</li>`].join('');
     });
     if (arrayIdentical(html, previousInbox)) return;
     previousInbox = html;
