@@ -8,7 +8,8 @@ RSpec.describe Postmortem::Delivery do
       Postmortem::Adapters::Base,
       subject: email_subject,
       html_body: '<div>My HTML content</div>',
-      serializable: {}
+      serializable: {},
+      id: 'abc-def-123-456'
     )
   end
 

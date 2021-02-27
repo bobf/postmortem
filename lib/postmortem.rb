@@ -9,6 +9,7 @@ require 'erb'
 require 'json'
 require 'cgi'
 require 'digest'
+require 'securerandom'
 
 require 'postmortem/version'
 require 'postmortem/adapters'

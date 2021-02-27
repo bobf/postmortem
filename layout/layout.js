@@ -199,6 +199,13 @@
   };
 
   const loadMail = (mail) => {
+    window.location.hash = mail.id;
+
+    const $target = $(`li[data-email-id="${mail.id}"]`);
+    console.log(mail.id, $target);
+    $('.inbox-item').removeClass('active');
+    $target.addClass('active');
+
     htmlIframeDocument.open();
     htmlIframeDocument.write(mail.htmlBody);
     htmlIframeDocument.close();
@@ -249,9 +256,6 @@
     $('.inbox-item').click((ev) => {
       const $target = $(ev.currentTarget);
       const id = $target.data('email-id');
-      $('.inbox-item').removeClass('active');
-      $target.addClass('active');
-      window.location.hash = id;
       setTimeout(() => loadMail(mailsById[id].content), 0);
     });
 

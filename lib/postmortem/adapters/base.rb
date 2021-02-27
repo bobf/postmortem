@@ -16,7 +16,11 @@ module Postmortem
       end
 
       def serializable
-        FIELDS.map { |field| [camelize(field.to_s), public_send(field)] }.to_h
+        (%i[id] + FIELDS).map { |field| [camelize(field.to_s), public_send(field)] }.to_h
+      end
+
+      def id
+        @id ||= SecureRandom.uuid
       end
 
       FIELDS.each do |method_name|

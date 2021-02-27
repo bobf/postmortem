@@ -32,7 +32,8 @@ RSpec.describe Postmortem do
         Postmortem::Adapters::Base,
         subject: 'My subject',
         html_body: '<div>My HTML content</div>',
-        serializable: {}
+        serializable: {},
+        id: 'abc-def-123-456'
       )
     end
 

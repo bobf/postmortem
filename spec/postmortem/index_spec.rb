@@ -5,7 +5,10 @@ RSpec.describe Postmortem::Index do
 
   before { Timecop.freeze(Time.new(2001, 2, 3, 4, 5, 6)) }
   let(:email) do
-    instance_double(Postmortem::Adapters::Base, subject: email_subject, serializable: {})
+    instance_double(
+      Postmortem::Adapters::Base,
+      subject: email_subject, serializable: {}, id: 'abc-def-123-456'
+    )
   end
   let(:email_subject) { 'Email subject' }
   let(:encoded_email) { {} }
