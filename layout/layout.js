@@ -25,20 +25,7 @@
   const storage = window.localStorage;
 
   const initialize = () => {
-    loadMail(initialData);
-
     reloadIdentityIframeTimeout = setTimeout(() => identityIframe.src += '', 3000);
-
-    window.addEventListener('message', function (ev) {
-      switch (ev.data.type) {
-        case 'index':
-          renderInbox(ev.data.uuid, ev.data.mails);
-          break;
-        case 'identity':
-          compareIdentity(ev.data.uuid);
-          break;
-      };
-    });
 
     setInterval(function () { indexIframe.contentWindow.postMessage('HELO', '*'); }, 1000);
     setInterval(function () { identityIframe.contentWindow.postMessage('HELO', '*'); }, 1000);
@@ -57,6 +44,25 @@
 
     setColumnView(false);
     setHeadersView(true);
+
+    if (inbox) {
+      window.addEventListener('message', function (ev) {
+        switch (ev.data.type) {
+          case 'index':
+            renderInbox(ev.data.uuid, ev.data.mails);
+            break;
+          case 'identity':
+            compareIdentity(ev.data.uuid);
+            break;
+        };
+      });
+    } else {
+      // Downloaded preview mode.
+      setDisabled(columnSwitch);
+      toolbar.download.classList.add('hidden');
+    }
+
+    loadMail(initialData);
 
     $('[data-toggle="tooltip"]').tooltip();
   }
@@ -81,7 +87,7 @@
   };
 
   var setColumnView = function (enableTwoColumnView) {
-    if (!inboxInitialized) return;
+    if (!inbox || !inboxInitialized) return;
 
     var container = document.querySelector('.container');
     twoColumnView = enableTwoColumnView;
@@ -109,6 +115,7 @@
     html: document.querySelector('.html-view-switch'),
     text: document.querySelector('.text-view-switch'),
     headers: document.querySelector('.headers-view-switch'),
+    download: document.querySelector('#download-link'),
   };
 
   var setOn = function(element) {
@@ -196,7 +203,6 @@
       setEnabled(toolbar.source);
     }
 
-    setDisabled(columnSwitch);
     setView(currentView);
   };
 
@@ -241,7 +247,11 @@
   };
 
   const loadDownloadLink = () => {
-    const blob = new Blob([document.documentElement.innerHTML], { type: 'application/octet-stream' });
+    const html = document.documentElement.innerHTML;
+    const start = html.indexOf('<!--INBOX-START-->');
+    const end = html.indexOf('<!--INBOX-END-->') + '<!--INBOX-END-->'.length;
+    const modifiedHtml = [html.substring(0, start), html.substring(end + 1, html.length)].join('');
+    const blob = new Blob([modifiedHtml], { type: 'application/octet-stream' });
     const uri = window.URL.createObjectURL(blob);
     $("#download-link").attr('href', uri);
   };
@@ -282,11 +292,11 @@
     });
 
     if (!inboxInitialized) {
+      inboxInitialized = true;
       setEnabled(columnSwitch);
       setColumnView(true);
       setVisible(inbox, true);
     }
-    inboxInitialized = true;
     indexUuid = uuid;
   };
 
