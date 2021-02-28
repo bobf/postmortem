@@ -70,10 +70,13 @@
       <%= javascript_dependencies %>
     </script>
     <%= headers_template %>
+    <script id="initialize-script" type="text/javascript">
+      const POSTMORTEM = {};
+      POSTMORTEM.initialData = <%= mail.serializable.to_json %>;
+      POSTMORTEM.hasHtml = <%= (!mail.html_body.nil?).to_json %>;
+      POSTMORTEM.hasText = <%= (!mail.text_body.nil?).to_json %>;
+    </script>
     <script>
-      var initialData = <%= mail.serializable.to_json %>;
-      var hasHtml = <%= (!mail.html_body.nil?).to_json %>;
-      var hasText = <%= (!mail.text_body.nil?).to_json %>;
       <%= javascript %>
     </script>
   </body>

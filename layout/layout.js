@@ -36,7 +36,7 @@
     toolbar.headers.onclick = function () { setHeadersView(!headersView); };
     columnSwitch.onclick    = function () { setColumnView(!twoColumnView); };
 
-    if (hasHtml) {
+    if (POSTMORTEM.hasHtml) {
       setView('html');
     } else {
       setView('text');
@@ -62,7 +62,7 @@
       toolbar.download.classList.add('hidden');
     }
 
-    loadMail(initialData);
+    loadMail(POSTMORTEM.initialData);
 
     $('[data-toggle="tooltip"]').tooltip();
   }
@@ -207,6 +207,17 @@
   };
 
   const loadMail = (mail) => {
+    const initializeScript = document.querySelector("#initialize-script");
+    const initObject = {
+      initialData: mail,
+      hasHtml: !!mail.htmlBody,
+      hasText: !!mail.textBody,
+    };
+
+    initializeScript.text = [
+      `const POSTMORTEM = ${JSON.stringify(initObject)};`
+    ].join('\n\n');
+
     htmlIframeDocument.open();
     htmlIframeDocument.write(mail.htmlBody);
     htmlIframeDocument.close();
