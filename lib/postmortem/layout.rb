@@ -37,6 +37,10 @@ module Postmortem
       default_layout_directory.join('headers_template.html').read
     end
 
+    def favicon_b64
+      default_layout_directory.join('favicon.b64').read
+    end
+
     private
 
     def default_layout_directory
