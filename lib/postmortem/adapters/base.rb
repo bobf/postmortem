@@ -50,6 +50,35 @@ module Postmortem
           .map { |substring, index| index.zero? ? substring : substring.capitalize }
           .join
       end
+
+      def text_part
+        return nil unless text?
+        return mail.body.decoded unless mail.text_part
+
+        mail.text_part.decoded
+      end
+
+      def html_part
+        return nil unless html?
+        return mail.body.decoded unless mail.html_part
+
+        mail.html_part.decoded
+      end
+
+      def text?
+        return true unless mail.has_content_type?
+        return true if mail.content_type.include?('text/plain')
+        return true if mail.multipart? && mail.text_part
+
+        false
+      end
+
+      def html?
+        return true if mail.has_content_type? && mail.content_type.include?('text/html')
+        return true if mail.multipart? && mail.html_part
+
+        false
+      end
     end
   end
 end

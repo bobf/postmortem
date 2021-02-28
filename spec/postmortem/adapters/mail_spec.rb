@@ -15,7 +15,9 @@ RSpec.describe Postmortem::Adapters::Mail do
         subject: 'Email Subject',
         text_part: double(decoded: 'My text content'),
         html_part: double(decoded: '<div>My HTML content</div>'),
-        message_id: 'abc-123'
+        message_id: 'abc-123',
+        has_content_type?: false,
+        multipart?: true
       }
     )
   end

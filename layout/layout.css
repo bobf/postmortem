@@ -103,6 +103,7 @@
 
 #inbox ul {
   list-style-type: none;
+  width: 32rem;
 }
 
 .list-group-item {
