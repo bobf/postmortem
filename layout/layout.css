@@ -49,6 +49,8 @@
 }
 
 .inbox-loading {
+  font-size: 1.6rem;
+  font-weight: 200;
   padding-top: 4rem;
   padding-left: 0.2rem;
   animation: fade 3s infinite;

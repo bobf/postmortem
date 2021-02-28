@@ -6,7 +6,7 @@ RSpec.describe 'ActionMailer plugin' do
 
   before { allow_any_instance_of(Mail::SMTP).to receive(:deliver!) }
 
-  context 'actionmailer adapter is :test' do
+  context 'actionmailer adapter does not delegate to Mail' do
     let(:application) { double(config: double(action_mailer: double(delivery_method: :test))) }
     before { allow(Rails).to receive(:application) { application } }
 
@@ -21,7 +21,10 @@ RSpec.describe 'ActionMailer plugin' do
     end
   end
 
-  context 'actionmailer adapter is not :test' do
+  context 'actionmailer adapter delegates to Mail' do
+    let(:application) { double(config: double(action_mailer: double(delivery_method: :smtp))) }
+    before { allow(Rails).to receive(:application) { application } }
+
     it 'delegates to Mail plugin' do
       expect(Postmortem).to_not receive(:record_delivery)
       TestMailer.multipart_email.deliver_later
