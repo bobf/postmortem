@@ -23,11 +23,11 @@
 
       <i data-toggle="tooltip"
          title="View HTML Source"
-         class="fa fa-file-code-o source-view-switch"></i>
+         class="fa fa-code source-view-switch"></i>
 
       <i data-toggle="tooltip"
          title="View HTML Part"
-         class="fa fa-code html-view-switch"></i>
+         class="fa fa-file-code-o html-view-switch"></i>
 
       <i data-toggle="tooltip"
          title="View Plaintext Part"
@@ -91,7 +91,7 @@
     <%= headers_template %>
     <script id="initialize-script" type="text/javascript">
       const POSTMORTEM = {};
-      POSTMORTEM.displayInbox = true;
+      POSTMORTEM.downloadedPreview = false;
       POSTMORTEM.initialData = <%= mail.serializable.to_json %>;
       POSTMORTEM.hasHtml = <%= (!mail.html_body.nil?).to_json %>;
       POSTMORTEM.hasText = <%= (!mail.text_body.nil?).to_json %>;

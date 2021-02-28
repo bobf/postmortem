@@ -51,12 +51,16 @@
       setView('text');
     }
 
-    setColumnView(POSTMORTEM.displayInbox);
+    setColumnView(!POSTMORTEM.downloadedPreview);
     setHeadersView(true);
     setEnabled(columnSwitch);
-    setVisible(inbox, POSTMORTEM.displayInbox);
+    setOn(columnSwitch);
+    setHidden(inbox, POSTMORTEM.downloadedPreview);
 
-    if (inbox) {
+    if (POSTMORTEM.downloadedPreview) {
+      setHidden(toolbar.download, true);
+      setHidden(columnSwitch, true);
+    } else {
       window.addEventListener('message', function (ev) {
         switch (ev.data.type) {
           case 'index':
@@ -67,10 +71,6 @@
             break;
         };
       });
-    } else {
-      // Downloaded preview mode.
-      setDisabled(columnSwitch);
-      toolbar.download.classList.add('hidden');
     }
 
     loadMail(POSTMORTEM.initialData);
@@ -93,7 +93,7 @@
     if (!inbox) return;
 
     const container = document.querySelector('.container');
-    twoColumnView = POSTMORTEM.displayInbox ? enableTwoColumnView : false;
+    twoColumnView = POSTMORTEM.downloadedPreview ? false : enableTwoColumnView;
     if (twoColumnView) {
       setVisible(inbox, true);
       setOn(columnSwitch);
@@ -139,6 +139,14 @@
   const setEnabled = function(element) {
     element.classList.remove('disabled');
     element.classList.add('text-secondary');
+  };
+
+  const setHidden = function(element, hidden) {
+    if (hidden) {
+      element.classList.add('hidden');
+    } else {
+      element.classList.remove('hidden');
+    }
   };
 
   const setVisible = function(element, visible) {
@@ -215,7 +223,7 @@
       initialData: mail,
       hasHtml: !!mail.htmlBody,
       hasText: !!mail.textBody,
-      displayInbox: false,
+      downloadedPreview: true,
     };
 
     initializeScript.text = [
