@@ -15,6 +15,8 @@
   const columnSwitch = document.querySelector('.column-switch');
   const headersViewSwitch = document.querySelector('.headers-view-switch');
   const readAllButton = document.querySelector('.read-all-button');
+  const showHideReadButton = document.querySelector('.show-hide-read-button');
+  const showHideReadIcon = document.querySelector('.show-hide-read-icon');
   const htmlIframeDocument = document.querySelector("#html-iframe").contentDocument;
   const indexIframe = document.querySelector("#index-iframe");
   const identityIframe = document.querySelector("#identity-iframe");
@@ -38,12 +40,13 @@
 
     setInterval(function () { identityIframe.contentWindow.postMessage('HELO', '*'); }, 1000);
 
-    toolbar.html.onclick    = function (ev) { setView('html', ev); };
-    toolbar.text.onclick    = function (ev) { setView('text', ev); };
-    toolbar.source.onclick  = function (ev) { setView('source', ev); };
-    toolbar.headers.onclick = function () { setHeadersView(!headersView); };
-    columnSwitch.onclick    = function () { setColumnView(!twoColumnView); };
-    readAllButton.onclick   = function () { markAllAsRead(); };
+    toolbar.html.onclick       = (ev) => setView('html', ev);
+    toolbar.text.onclick       = (ev) => setView('text', ev);
+    toolbar.source.onclick     = (ev) => setView('source', ev);
+    toolbar.headers.onclick    = ()   => setHeadersView(!headersView);
+    columnSwitch.onclick       = ()   => setColumnView(!twoColumnView);
+    readAllButton.onclick      = ()   => markAllAsRead();
+    showHideReadButton.onclick = ()   => toggleHideReadMessages();
 
     if (POSTMORTEM.hasHtml) {
       setView('html');
@@ -255,6 +258,38 @@
   const markAsRead = (mail) => {
     storage.setItem(mail.id, 'read');
     $(`li[data-email-id="${mail.id}"]`).removeClass('unread');
+    $(readAllButton).blur();
+  };
+
+  const showReadMessages = (show) => {
+    if (show) {
+      inbox.classList.remove('hide-read');
+    } else {
+      inbox.classList.add('hide-read');
+    }
+  };
+
+  const toggleHideReadMessages = () => {
+    const $target = $(showHideReadButton);
+    const $icon = $(showHideReadIcon);
+
+    if ($target.data('state') === 'hide') {
+      $target.data('state', 'show');
+      $target.attr('data-original-title', 'Hide read messages');
+      $target.attr('title', 'Hide read messages');
+      $icon.removeClass('fa-eye-slash');
+      $icon.addClass('fa fa-eye text-primary');
+      showReadMessages(true);
+    } else {
+      $target.data('state', 'hide');
+      $target.attr('data-original-title', 'Show read messages');
+      $target.attr('title', 'Show read messages');
+      $icon.removeClass('fa-eye text-primary');
+      $icon.addClass('fa fa-eye-slash');
+      showReadMessages(false);
+    }
+
+    $target.blur();
   };
 
   const markAllAsRead = () => {

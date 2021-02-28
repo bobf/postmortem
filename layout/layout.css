@@ -68,6 +68,13 @@
     color: #555;
   }
 }
+
+.show-hide-read-button {
+  position: absolute;
+  right: 5rem;
+  top: 0.4rem;
+}
+
 .read-all-button {
   position: absolute;
   right: 0.5rem;
@@ -102,7 +109,15 @@
   padding-left: 0.75rem;
 }
 
-#inbox li .unread-icon, #inbox li .read-icon {
+.inbox-container.hide-read li {
+  display: none;
+}
+
+.inbox-container.hide-read li.unread, .inbox-container.hide-read li.active {
+  display: block;
+}
+
+.inbox-container li .unread-icon, .inbox-container li .read-icon {
   padding-right: 0.75rem;
   font-size: 1.2rem;
 }
