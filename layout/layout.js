@@ -6,6 +6,7 @@
   let indexUuid;
   let inboxInitialized = false;
 
+  const inboxContent = [];
   const htmlIframeDocument = document.querySelector("#html-iframe").contentDocument;
   const indexIframe = document.querySelector("#index-iframe");
   const identityIframe = document.querySelector("#identity-iframe");
@@ -49,7 +50,7 @@
       window.addEventListener('message', function (ev) {
         switch (ev.data.type) {
           case 'index':
-            renderInbox(ev.data.uuid, ev.data.mails);
+            loadInbox(ev.data.uuid, ev.data.mails);
             break;
           case 'identity':
             compareIdentity(ev.data.uuid);
@@ -237,6 +238,7 @@
 
     highlightMail(mail);
     markAsRead(mail);
+    updateDocumentTitle();
   };
 
   const markAsRead = (mail) => {
@@ -274,7 +276,15 @@
     identityUuid = uuid;
   };
 
-  const renderInbox = (uuid, mails) => {
+  const updateDocumentTitle = () => {
+    if (!inboxContent.length) return;
+
+    const unreadCount = inboxContent.filter((mail) => isNewMail(mail)).length;
+    document.title = `Postmortem ${unreadCount}/${inboxContent.length} (unread/total)`;
+  };
+
+  const loadInbox = (uuid, mails) => {
+    inboxContent.splice(0, Infinity, ...mails)
     if (uuid === indexUuid) {
       return;
     }
@@ -283,9 +293,12 @@
       const parsedTimestamp = new Date(mail.timestamp);
       const timestampSpan = `<span class="timestamp">${parsedTimestamp.toLocaleString()}</span>`;
       const classes = ['list-group-item', 'inbox-item'];
+
       if (window.location.hash === '#' + mail.id) classes.push('active');
       if (isNewMail(mail)) classes.push('unread');
+
       mailsById[mail.id] = mail;
+
       return [`<li data-email-id="${mail.id}" class="${classes.join(' ')}">`,
               `<a title="${mail.subject}" href="javascript:void(0)">`,
               `<i class="fa fa-envelope-open read-icon"></i>`,
@@ -293,6 +306,7 @@
               `</a>`,
               `${timestampSpan}</li>`].join('');
     });
+    updateDocumentTitle();
     if (arrayIdentical(html, previousInbox)) return;
     previousInbox = html;
     $('#inbox').html('<ul class="list-group">' + html.join('\n') + '</ul>');
