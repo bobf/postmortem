@@ -6,6 +6,7 @@
   let indexUuid;
   let twoColumnView;
   let headersView;
+  let indexIframeTimeout;
 
   const inboxContent = [];
   const headers = document.querySelector('.headers');
@@ -35,7 +36,6 @@
   const initialize = () => {
     reloadIdentityIframeTimeout = setTimeout(() => identityIframe.src += '', 3000);
 
-    setInterval(function () { indexIframe.contentWindow.postMessage('HELO', '*'); }, 1000);
     setInterval(function () { identityIframe.contentWindow.postMessage('HELO', '*'); }, 1000);
 
     toolbar.html.onclick    = function (ev) { setView('html', ev); };
@@ -280,7 +280,11 @@
   const compareIdentity = (uuid) => {
     clearTimeout(reloadIdentityIframeTimeout);
     reloadIdentityIframeTimeout = setTimeout(() => identityIframe.src += '', 3000);
-    if (identityUuid !== uuid) indexIframe.src += '';
+    if (identityUuid !== uuid) {
+      indexIframe.src += '';
+      clearTimeout(indexIframeTimeout);
+      indexIframeTimeout = setInterval(function () { indexIframe.contentWindow.postMessage('HELO', '*'); }, 200);
+    }
     identityUuid = uuid;
   };
 
@@ -294,6 +298,7 @@
   };
 
   const loadInbox = (uuid, mails) => {
+    clearTimeout(indexIframeTimeout);
     inboxContent.splice(0, Infinity, ...mails)
     if (uuid === indexUuid) {
       return;
