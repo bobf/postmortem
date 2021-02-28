@@ -21,7 +21,7 @@ RSpec.describe Postmortem do
       end
       allow_any_instance_of(Mail::SMTP).to receive(:deliver!)
       Timecop.freeze(Time.new(2001, 2, 3, 4, 5, 6))
-      allow(STDOUT).to receive(:write)
+      allow($stdout).to receive(:write)
       allow(delivery).to receive(:html_body=)
     end
 
@@ -43,19 +43,19 @@ RSpec.describe Postmortem do
     end
 
     context 'output is a tty' do
-      before { allow(STDOUT).to receive(:tty?) { true } }
+      before { allow($stdout).to receive(:tty?) { true } }
 
       it 'outputs a colorized URL' do
-        expect(STDOUT).to receive(:write).with("\e[34m[postmortem]\e[36m #{path}\e[0m\n")
+        expect($stdout).to receive(:write).with("\e[34m[postmortem]\e[36m #{path}\e[0m\n")
         Postmortem.record_delivery(delivery)
       end
     end
 
     context 'output is a non-tty file' do
-      before { allow(STDOUT).to receive(:tty?) { false } }
+      before { allow($stdout).to receive(:tty?) { false } }
 
       it 'outputs a URL' do
-        expect(STDOUT).to receive(:write).with("#{path}\n")
+        expect($stdout).to receive(:write).with("#{path}\n")
         Postmortem.record_delivery(delivery)
       end
     end

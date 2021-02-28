@@ -57,7 +57,7 @@ module Postmortem
     private
 
     def log_delivery(delivery)
-      output_file.write(colorized(delivery.path.to_s) + "\n")
+      output_file.write("#{colorized(delivery.path.to_s)}\n")
       output_file.flush
     end
 
@@ -68,7 +68,7 @@ module Postmortem
     end
 
     def output_file
-      return STDOUT if config.log_path.nil?
+      return $stdout if config.log_path.nil?
 
       @output_file ||= File.open(config.log_path, mode: 'a')
     end

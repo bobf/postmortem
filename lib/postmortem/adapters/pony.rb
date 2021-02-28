@@ -8,14 +8,11 @@ module Postmortem
 
       def adapted
         {
-          from: mail.from,
-          reply_to: mail.reply_to,
-          to: mail.to,
-          cc: mail.cc,
-          bcc: mail.bcc,
+          from: mail.from, reply_to: mail.reply_to, to: mail.to, cc: mail.cc, bcc: mail.bcc,
           subject: mail.subject,
           text_body: @data[:body],
-          html_body: @data[:html_body]
+          html_body: @data[:html_body],
+          message_id: mail.message_id # We use a synthetic Mail instance so this is a bit useless.
         }
       end
 

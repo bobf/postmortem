@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.description   = 'Preview HTML emails in your browser during development'
   spec.homepage      = 'https://github.com/bobf/postmortem'
   spec.license       = 'MIT'
-  spec.required_ruby_version = Gem::Requirement.new('>= 2.3.0')
+  spec.required_ruby_version = Gem::Requirement.new('>= 2.5.0')
 
   spec.metadata['homepage_uri'] = spec.homepage
   spec.metadata['source_code_uri'] = spec.homepage
@@ -28,10 +28,12 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'mail', '~> 2.7'
 
   spec.add_development_dependency 'actionmailer', '~> 6.0'
+  spec.add_development_dependency 'devpack', '~> 0.3.2'
   spec.add_development_dependency 'pony', '~> 1.13'
   spec.add_development_dependency 'rspec', '~> 3.9'
   spec.add_development_dependency 'rspec-its', '~> 1.3'
-  spec.add_development_dependency 'rubocop', '~> 0.88.0'
+  spec.add_development_dependency 'rubocop', '~> 1.10'
+  spec.add_development_dependency 'rubocop-rspec', '~> 2.2'
   spec.add_development_dependency 'strong_versions', '~> 0.4.5'
   spec.add_development_dependency 'timecop', '~> 0.9.1'
 end

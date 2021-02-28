@@ -14,7 +14,8 @@ RSpec.describe Postmortem::Adapters::Mail do
         bcc: 'bcc@example.com',
         subject: 'Email Subject',
         text_part: double(decoded: 'My text content'),
-        html_part: double(decoded: '<div>My HTML content</div>')
+        html_part: double(decoded: '<div>My HTML content</div>'),
+        message_id: 'abc-123'
       }
     )
   end

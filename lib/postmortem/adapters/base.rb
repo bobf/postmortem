@@ -2,7 +2,7 @@
 
 module Postmortem
   module Adapters
-    FIELDS = %i[from reply_to to cc bcc subject text_body html_body].freeze
+    FIELDS = %i[from reply_to to cc bcc subject text_body html_body message_id].freeze
 
     # Base interface implementation for all Postmortem adapters.
     class Base

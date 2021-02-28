@@ -10,4 +10,6 @@
 .rspec_status
 *.gem
 
+preview/
+
 Gemfile.lock

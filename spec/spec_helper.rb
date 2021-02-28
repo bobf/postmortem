@@ -6,9 +6,9 @@ require 'action_mailer'
 require 'action_view'
 require 'active_job'
 
-require 'devpack'
 require 'rspec/its'
 require 'timecop'
+require 'devpack'
 
 require 'postmortem'
 

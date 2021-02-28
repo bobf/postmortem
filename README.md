@@ -42,8 +42,6 @@ Or install it yourself as:
 
 _PostMortem_ automatically integrates with _Rails ActionMailer_ and  _Pony_. When an email is sent an entry will be visible in your application's log output.
 
-The path to the preview file is based on the current time and the subject of the email. If you would prefer to use the same path for each email you can disable timestamps (see [configuration](#configuration)) and simply reload your browser every time an email is sent.
-
 If you are using assets (images etc.) with _ActionMailer_ make sure to configure the asset host, e.g.:
 
 ```ruby
@@ -53,10 +51,17 @@ Rails.application.configure do
 end
 ```
 
-Load the provided file in your browser to preview your email.
+A log entry will be generated every time an email is sent. Load the path provided in the log entry in your browser to launch _PostMortem_:
 
 ![Screenshot](doc/screenshot.png)
 
+### Clearing the inbox
+
+The inbox can be cleared at any time (e.g. at the start of a test run):
+
+```ruby
+Postmortem.clear_inbox
+```
 
 ## Configuration
 <a name="configuration"></a>
