@@ -12,10 +12,13 @@ _PostMortem_ should only be enabled in test or development environments.
 
 * Seamless integration with [_ActionMailer_](https://guides.rubyonrails.org/action_mailer_basics.html), [_Pony_](https://github.com/benprew/pony), [_Mail_](https://github.com/mikel/mail), etc.
 * Email deliveries are always intercepted (can be configured to pass through).
+* Live inbox monitors incoming emails so you can view them as soon as they are delivered.
 * Preview email content as well as typical email headers (recipients, subject, etc.).
 * View rendered _HTML_, plaintext, or _HTML_ source with syntax highlighting (courtesy of [highlight.js](https://highlightjs.org/)).
-* Dual or single column view to suit your requirements.
 * Content is loaded inside an `<iframe>` to ensure document isolation and validity.
+* Local images are located and embedded in HTML so you can see the full version of outgoing emails.
+* Runs without a server - single page app runs on file system with no need to run a local web server to access UI.
+* Any captured email can be downloaded into a standalone HTML file which can be shared with others.
 
 ## Installation
 
