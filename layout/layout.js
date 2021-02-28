@@ -4,9 +4,16 @@
   let reloadIdentityIframeTimeout;
   let identityUuid;
   let indexUuid;
-  let inboxInitialized = false;
+  let twoColumnView;
+  let headersView;
 
   const inboxContent = [];
+  const headers = document.querySelector('.headers');
+  const inbox = document.querySelector('#inbox-container');
+  const inboxInfo = document.querySelector('#inbox-info');
+  const columnSwitch = document.querySelector('.column-switch');
+  const headersViewSwitch = document.querySelector('.headers-view-switch');
+  const readAllButton = document.querySelector('.read-all-button');
   const htmlIframeDocument = document.querySelector("#html-iframe").contentDocument;
   const indexIframe = document.querySelector("#index-iframe");
   const identityIframe = document.querySelector("#identity-iframe");
@@ -36,6 +43,7 @@
     toolbar.source.onclick  = function (ev) { setView('source', ev); };
     toolbar.headers.onclick = function () { setHeadersView(!headersView); };
     columnSwitch.onclick    = function () { setColumnView(!twoColumnView); };
+    readAllButton.onclick   = function () { markAllAsRead(); };
 
     if (POSTMORTEM.hasHtml) {
       setView('html');
@@ -43,8 +51,10 @@
       setView('text');
     }
 
-    setColumnView(false);
+    setColumnView(POSTMORTEM.displayInbox);
     setHeadersView(true);
+    setEnabled(columnSwitch);
+    setVisible(inbox, POSTMORTEM.displayInbox);
 
     if (inbox) {
       window.addEventListener('message', function (ev) {
@@ -68,15 +78,7 @@
     $('[data-toggle="tooltip"]').tooltip();
   }
 
-
-  var twoColumnView;
-  var headersView;
-  var headers = document.querySelector('.headers');
-  var inbox = document.querySelector('#inbox');
-  var columnSwitch = document.querySelector('.column-switch');
-  var headersViewSwitch = document.querySelector('.headers-view-switch');
-
-  var setHeadersView = function (enableHeadersView) {
+  const setHeadersView = (enableHeadersView) => {
     headersView = enableHeadersView;
     if (enableHeadersView) {
       setOn(headersViewSwitch);
@@ -87,11 +89,11 @@
     }
   };
 
-  var setColumnView = function (enableTwoColumnView) {
-    if (!inbox || !inboxInitialized) return;
+  const setColumnView = (enableTwoColumnView) => {
+    if (!inbox) return;
 
-    var container = document.querySelector('.container');
-    twoColumnView = enableTwoColumnView;
+    const container = document.querySelector('.container');
+    twoColumnView = POSTMORTEM.displayInbox ? enableTwoColumnView : false;
     if (twoColumnView) {
       setVisible(inbox, true);
       setOn(columnSwitch);
@@ -103,15 +105,15 @@
     }
   };
 
-  var contexts = ['source', 'text', 'html'];
+  const contexts = ['source', 'text', 'html'];
 
-  var views = {
+  const views = {
     source: document.querySelector('.source-view'),
     html: document.querySelector('.html-view'),
     text: document.querySelector('.text-view'),
   };
 
-  var toolbar = {
+  const toolbar = {
     source: document.querySelector('.source-view-switch'),
     html: document.querySelector('.html-view-switch'),
     text: document.querySelector('.text-view-switch'),
@@ -119,27 +121,27 @@
     download: document.querySelector('#download-link'),
   };
 
-  var setOn = function(element) {
+  const setOn = function(element) {
     element.classList.add('text-primary');
     element.classList.remove('text-secondary');
   };
 
-  var setOff = function(element) {
+  const setOff = function(element) {
     element.classList.add('text-secondary');
     element.classList.remove('text-primary');
   };
 
-  var setDisabled = function(element) {
+  const setDisabled = function(element) {
     element.classList.add('disabled');
     element.classList.remove('text-secondary');
   };
 
-  var setEnabled = function(element) {
+  const setEnabled = function(element) {
     element.classList.remove('disabled');
     element.classList.add('text-secondary');
   };
 
-  var setVisible = function(element, visible) {
+  const setVisible = function(element, visible) {
     if (visible) {
       element.classList.add('visible');
     } else {
@@ -147,9 +149,9 @@
     }
   };
 
-  var setView = function(context, ev) {
+  const setView = function(context, ev) {
     if (ev && $(ev.target).hasClass('disabled')) return;
-    var key;
+    let key;
     for (i = 0; i < contexts.length; i++) {
       key = contexts[i];
       if (key === context) {
@@ -213,6 +215,7 @@
       initialData: mail,
       hasHtml: !!mail.htmlBody,
       hasText: !!mail.textBody,
+      displayInbox: false,
     };
 
     initializeScript.text = [
@@ -238,11 +241,17 @@
 
     highlightMail(mail);
     markAsRead(mail);
-    updateDocumentTitle();
+    updateInboxInfo();
   };
 
   const markAsRead = (mail) => {
     storage.setItem(mail.id, 'read');
+    $(`li[data-email-id="${mail.id}"]`).removeClass('unread');
+  };
+
+  const markAllAsRead = () => {
+    inboxContent.forEach(mail => markAsRead(mail));
+    updateInboxInfo();
   };
 
   const isNewMail = (mail) => {
@@ -256,7 +265,6 @@
     const $target = $(`li[data-email-id="${mail.id}"]`);
     $('.inbox-item').removeClass('active');
     $target.addClass('active');
-    $target.removeClass('unread');
   };
 
   const loadDownloadLink = () => {
@@ -276,11 +284,13 @@
     identityUuid = uuid;
   };
 
-  const updateDocumentTitle = () => {
+  const updateInboxInfo = () => {
     if (!inboxContent.length) return;
 
     const unreadCount = inboxContent.filter((mail) => isNewMail(mail)).length;
-    document.title = `Postmortem ${unreadCount}/${inboxContent.length} (unread/total)`;
+    document.title = `PostMortem ${unreadCount}/${inboxContent.length} (unread/total)`;
+    inboxInfo.textContent = `${inboxContent.length} emails (${unreadCount} unread)`;
+    inboxInfo.innerHTML = `&mdash; ${inboxInfo.innerHTML}`;
   };
 
   const loadInbox = (uuid, mails) => {
@@ -306,7 +316,7 @@
               `</a>`,
               `${timestampSpan}</li>`].join('');
     });
-    updateDocumentTitle();
+    updateInboxInfo();
     if (arrayIdentical(html, previousInbox)) return;
     previousInbox = html;
     $('#inbox').html('<ul class="list-group">' + html.join('\n') + '</ul>');
@@ -316,12 +326,6 @@
       setTimeout(() => loadMail(mailsById[id].content), 0);
     });
 
-    if (!inboxInitialized) {
-      inboxInitialized = true;
-      setEnabled(columnSwitch);
-      setColumnView(true);
-      setVisible(inbox, true);
-    }
     indexUuid = uuid;
   };
 

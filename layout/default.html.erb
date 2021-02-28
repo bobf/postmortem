@@ -41,13 +41,26 @@
          class="fa fa-envelope-open-o headers-view-switch"></i>
 
     </div>
+
     <div class="content">
       <div class="container full-width">
         <div class="row main-row">
-          <!--INBOX-START-->
-          <div id="inbox" class="col inbox">
+          <div id="inbox-container" class="col inbox-container">
+            <div class="row">
+              <div class="col inbox-header">
+                <h5><i class="fa fa-inbox"></i> Inbox <span class="text-secondary" id="inbox-info"></span></h5>
+                <button data-toggle="tooltip" title="Mark all as read" class="btn btn-secondary read-all-button"><i class="fa fa-envelope-open-o"></i> All</button>
+              </div>
+            </div>
+
+            <div class="row">
+              <!--INBOX-START-->
+              <div id="inbox" class="col inbox">
+                <div class="inbox-loading">Loading &mdash; <i class="fa fa-clock-o"></i></div>
+              </div>
+              <!--INBOX-END-->
+            </div>
           </div>
-          <!--INBOX-END-->
 
           <div class="col right-column">
             <div id="headers" class="row headers visible"></div>
@@ -55,9 +68,11 @@
             <div class="preview row html-view">
               <iframe id="html-iframe"></iframe>
             </div>
+
             <div class="preview row text-view">
               <iframe id="text-iframe"></iframe>
             </div>
+
             <div class="preview row source-view">
               <iframe id="source-iframe"></iframe>
             </div>
@@ -73,6 +88,7 @@
     <%= headers_template %>
     <script id="initialize-script" type="text/javascript">
       const POSTMORTEM = {};
+      POSTMORTEM.displayInbox = true;
       POSTMORTEM.initialData = <%= mail.serializable.to_json %>;
       POSTMORTEM.hasHtml = <%= (!mail.html_body.nil?).to_json %>;
       POSTMORTEM.hasText = <%= (!mail.text_body.nil?).to_json %>;

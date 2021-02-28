@@ -1,12 +1,12 @@
-# Postmortem
+# PostMortem
 
-_Postmortem_ provides a simple and clean preview of all outgoing mails sent by your _Ruby_ application to make email development a little less painful.
+_PostMortem_ provides a simple and clean preview of all outgoing mails sent by your _Ruby_ application to make email development a little less painful.
 
 Every time your application sends an email a clearly-visible log entry will be written which provides a path to a temporary file containing your preview.
 
-Take a look at a [live example](https://postmortem.surge.sh/) to see _Postmortem_ in action.
+Take a look at a [live example](https://postmortem.surge.sh/) to see _PostMortem_ in action.
 
-_Postmortem_ should only be enabled in test or development environments.
+_PostMortem_ should only be enabled in test or development environments.
 
 ## Features
 
@@ -37,7 +37,7 @@ Or install it yourself as:
 
 ## Usage
 
-_Postmortem_ automatically integrates with _Rails ActionMailer_ and  _Pony_. When an email is sent an entry will be visible in your application's log output.
+_PostMortem_ automatically integrates with _Rails ActionMailer_ and  _Pony_. When an email is sent an entry will be visible in your application's log output.
 
 The path to the preview file is based on the current time and the subject of the email. If you would prefer to use the same path for each email you can disable timestamps (see [configuration](#configuration)) and simply reload your browser every time an email is sent.
 
@@ -58,7 +58,7 @@ Load the provided file in your browser to preview your email.
 ## Configuration
 <a name="configuration"></a>
 
-Configure _Postmortem_ by calling `Postmortem.configure`, e.g. in a _Rails_ initializer.
+Configure _PostMortem_ by calling `Postmortem.configure`, e.g. in a _Rails_ initializer.
 
 ```ruby
 # config/initializers/postmortem.rb
@@ -66,7 +66,7 @@ Postmortem.configure do |config|
   # Colorize output in logs (path to preview HTML file) to improve visibility (default: true).
   config.colorize = true
 
-  # Path to the Postmortem log file, where preview paths are written (default: STDOUT).
+  # Path to the PostMortem log file, where preview paths are written (default: STDOUT).
   config.log_path = '/path/to/postmortem.log'
 
   # Path to save preview .html files (default: OS-provided temp directory).

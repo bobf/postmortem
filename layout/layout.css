@@ -18,14 +18,64 @@
   color: #007bff !important;
 }
 
-#inbox {
-  overflow-y: auto;
-  height: 100%;
-  max-height: 100%;
-  display: none;
+.inbox-container {
   width: 35rem;
   max-width: 35rem;
+  height: calc(100vh - 6rem);
+  max-height: calc(100vh - 6rem);
+  overflow-y: auto;
+  display: none;
+}
+
+.inbox-header {
+  padding-left: 0.8rem;
+  padding-right: 0.8rem;
+  padding-top: 0.9rem;
+  padding-bottom: 0.2rem;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  height: 3.5rem;
+  position: fixed;
+  z-index: 100;
+  width: 32rem;
+  max-width: 32rem;
+}
+
+#inbox-info {
+  font-size: 0.7rem;
+  margin-left: 0.2rem;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.inbox-loading {
+  padding-top: 4rem;
+  padding-left: 0.2rem;
+  animation: fade 3s infinite;
+  text-align: center;
+}
+
+@keyframes fade {
+  0% {
+    color: #555;
+  }
+  50% {
+    color: #ddd;
+  }
+  100% {
+    color: #555;
+  }
+}
+.read-all-button {
+  position: absolute;
+  right: 0.5rem;
+  top: 0.4rem;
+}
+
+#inbox {
   padding-right: 0.2rem;
+  padding-left: 0;
+  padding-top: 4rem;
 }
 
 #inbox.visible {
