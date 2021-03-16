@@ -19,7 +19,7 @@ Gem::Specification.new do |spec|
   spec.metadata['changelog_uri'] = 'https://github.com/bobf/postmortem/blob/master/README.md'
 
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
-    `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
+    `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features|doc)/}) }
   end
   spec.bindir        = 'bin'
   spec.executables   = []
@@ -29,6 +29,7 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency 'actionmailer', '~> 6.0'
   spec.add_development_dependency 'devpack', '~> 0.3.2'
+  spec.add_development_dependency 'faker', '~> 2.17'
   spec.add_development_dependency 'pony', '~> 1.13'
   spec.add_development_dependency 'rspec', '~> 3.9'
   spec.add_development_dependency 'rspec-its', '~> 1.3'

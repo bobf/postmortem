@@ -1,4 +1,6 @@
 (function () {
+  if (POSTMORTEM && POSTMORTEM.downloadedPreview) document.title = 'PostMortem';
+
   let previousInbox;
   let currentView;
   let reloadIdentityIframeTimeout;
@@ -248,7 +250,7 @@
 
     loadHeaders(mail);
     loadToolbar(mail);
-    loadDownloadLink();
+    loadDownloadLink(mail);
 
     highlightMail(mail);
     markAsRead(mail);
@@ -310,7 +312,7 @@
     $target.addClass('active');
   };
 
-  const loadDownloadLink = () => {
+  const loadDownloadLink = (mail) => {
     const html = document.documentElement.innerHTML;
     const start = html.indexOf('<!--INBOX-START-->');
     const end = html.indexOf('<!--INBOX-END-->') + '<!--INBOX-END-->'.length;
@@ -318,6 +320,8 @@
     const blob = new Blob([modifiedHtml], { type: 'application/octet-stream' });
     const uri = window.URL.createObjectURL(blob);
     $("#download-link").attr('href', uri);
+    console.log(mail.subject.replace(/[0-9a-zA-Z_ -]/gi, ''));
+    $("#download-link").attr('download', mail.subject.replace(/[^0-9a-zA-Z_ -]/gi, '') + '.html');
   };
 
   const compareIdentity = (uuid) => {
