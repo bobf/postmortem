@@ -57,7 +57,7 @@ module Postmortem
     private
 
     def log_delivery(delivery)
-      output_file.write("#{colorized(delivery.path.to_s)}\n")
+      output_file.write("#{colorized(delivery.uri)}\n")
       output_file.flush
     end
 

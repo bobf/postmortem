@@ -62,4 +62,9 @@ RSpec.describe Postmortem::Delivery do
       expect(index_path.read).to include fixture('postmortem_index.html').read
     end
   end
+
+  describe '#uri' do
+    subject(:uri) { delivery.uri }
+    it { is_expected.to start_with 'file://' }
+  end
 end

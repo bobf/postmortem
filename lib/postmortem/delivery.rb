@@ -20,6 +20,10 @@ module Postmortem
       @identity_path.write(identity.content)
     end
 
+    def uri
+      "file://#{path}##{@mail.id}"
+    end
+
     private
 
     def index

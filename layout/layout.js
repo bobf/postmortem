@@ -9,6 +9,8 @@
   let twoColumnView;
   let headersView;
   let indexIframeTimeout;
+  let requestedId;
+  let requestedPending = false;
 
   const inboxContent = [];
   const headers = document.querySelector('.headers');
@@ -65,7 +67,9 @@
     if (POSTMORTEM.downloadedPreview) {
       setHidden(toolbar.download, true);
       setHidden(columnSwitch, true);
+      loadMail(POSTMORTEM.initialData);
     } else {
+      requestLoad(window.location.hash.replace('#', ''));
       window.addEventListener('message', function (ev) {
         switch (ev.data.type) {
           case 'index':
@@ -78,10 +82,13 @@
       });
     }
 
-    loadMail(POSTMORTEM.initialData);
-
     $('[data-toggle="tooltip"]').tooltip();
   }
+
+  const requestLoad = (id) => {
+    requestedId = id;
+    requestedPending = true;
+  };
 
   const setHeadersView = (enableHeadersView) => {
     headersView = enableHeadersView;
@@ -320,7 +327,6 @@
     const blob = new Blob([modifiedHtml], { type: 'application/octet-stream' });
     const uri = window.URL.createObjectURL(blob);
     $("#download-link").attr('href', uri);
-    console.log(mail.subject.replace(/[0-9a-zA-Z_ -]/gi, ''));
     $("#download-link").attr('download', mail.subject.replace(/[^0-9a-zA-Z_ -]/gi, '') + '.html');
   };
 
@@ -357,9 +363,16 @@
       const classes = ['list-group-item', 'inbox-item'];
 
       if (window.location.hash === '#' + mail.id) classes.push('active');
+
       if (isNewMail(mail)) classes.push('unread');
 
       mailsById[mail.id] = mail;
+
+      if (requestedPending && mail.id === requestedId) {
+        requestedPending = false;
+        requestedId = null;
+        setTimeout(() => loadMail(mail.content), 0);
+      }
 
       return [`<li data-email-id="${mail.id}" class="${classes.join(' ')}">`,
               `<a title="${mail.subject}" href="javascript:void(0)">`,
