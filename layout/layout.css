@@ -251,7 +251,7 @@ a.icon:hover {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 #download-link:hover {

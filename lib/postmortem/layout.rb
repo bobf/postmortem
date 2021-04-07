@@ -42,7 +42,7 @@ module Postmortem
     end
 
     def upload_url
-      ENV.fetch('POSTMORTEM_UPLOAD_URL', 'https://postmortem.delivery/emails')
+      ENV.fetch('POSTMORTEM_DELIVERY_URL', 'https://postmortem.delivery/emails')
     end
 
     private

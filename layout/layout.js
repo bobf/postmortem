@@ -21,11 +21,8 @@
   const readAllButton = document.querySelector('.read-all-button');
   const showHideReadButton = document.querySelector('.show-hide-read-button');
   const showHideReadIcon = document.querySelector('.show-hide-read-icon');
-  const htmlIframeDocument = document.querySelector("#html-iframe").contentDocument;
-  const indexIframe = document.querySelector("#index-iframe");
-  const identityIframe = document.querySelector("#identity-iframe");
-  const textIframeDocument = document.querySelector("#text-iframe").contentDocument;
-  const sourceIframeDocument = document.querySelector("#source-iframe").contentDocument;
+  const getIndexIframe = () => document.querySelector("#index-iframe");
+  const getIdentityIframe = () => document.querySelector("#identity-iframe");
   const sourceHighlightBundle = [
      '<link rel="stylesheet"',
      '     href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/styles/agate.min.css"',
@@ -40,9 +37,9 @@
   const storage = window.localStorage;
 
   const initialize = () => {
-    reloadIdentityIframeTimeout = setTimeout(() => identityIframe.src += '', 1000);
+    reloadIdentityIframeTimeout = setTimeout(() => getIdentityIframe().src += '', 1000);
 
-    setInterval(function () { identityIframe.contentWindow.postMessage('HELO', '*'); }, 200);
+    setInterval(function () { getIdentityIframe().contentWindow.postMessage('HELO', '*'); }, 200);
 
     toolbar.html.onclick       = (ev) => setView('html', ev);
     toolbar.text.onclick       = (ev) => setView('text', ev);
@@ -257,6 +254,7 @@
     loadHeaders(mail);
     loadToolbar(mail);
     loadDownloadLink(mail);
+    loadUploadLink(mail);
 
     highlightMail(mail);
     markAsRead(mail);
@@ -318,29 +316,15 @@
     $target.addClass('active');
   };
 
+  const alertUploadFailure = (response, content) => {
+    alert(`Upload failed. Got: ${response.status} ${response.statusText}: ${content}`);
+  };
+
+  const alertUploadSuccess = (data) => {
+    alert(`Upload succeeded. URI: ${data.uri}, Expiry: ${data.expiresAt}`);
+  };
+
   const loadDownloadLink = (mail) => {
-    // XXX
-    const link = document.querySelector("#download-link");
-
-    link.onclick = async function(ev) {
-      ev.stopPropagation();
-      ev.preventDefault();
-
-      const response = await fetch(POSTMORTEM.uploadUrl, {
-        method: 'POST',
-        // mode: 'no-cors',
-        cache: 'no-cache',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: POSTMORTEM.initialData })
-      });
-
-      console.log(response.json());
-      return false;
-    };
-
-    return;
-    // XXX
-
     const html = document.documentElement.innerHTML;
     const start = html.indexOf('<!--INBOX-START-->');
     const end = html.indexOf('<!--INBOX-END-->') + '<!--INBOX-END-->'.length;
@@ -351,13 +335,39 @@
     $("#download-link").attr('download', mail.subject.replace(/[^0-9a-zA-Z_ -]/gi, '') + '.html');
   };
 
+  const loadUploadLink = (mail) => {
+    const link = document.querySelector("#upload-link");
+
+    link.onclick = async (ev) => {
+      ev.stopPropagation();
+      ev.preventDefault();
+
+      const response = await fetch(POSTMORTEM.uploadUrl, {
+        method: 'POST',
+        cache: 'no-cache',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: POSTMORTEM.initialData })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        alertUploadSuccess(data);
+      } else {
+        const content = await response.text();
+        alertUploadFailure(response, content);
+      }
+
+      return false;
+    };
+  };
+
   const compareIdentity = (uuid) => {
     clearTimeout(reloadIdentityIframeTimeout);
-    reloadIdentityIframeTimeout = setTimeout(() => identityIframe.src += '', 1000);
+    reloadIdentityIframeTimeout = setTimeout(() => getIdentityIframe().src += '', 1000);
     if (identityUuid !== uuid) {
-      indexIframe.src += '';
+      getIndexIframe().src += '';
       clearTimeout(indexIframeTimeout);
-      indexIframeTimeout = setInterval(function () { indexIframe.contentWindow.postMessage('HELO', '*'); }, 200);
+      indexIframeTimeout = setInterval(function () { getIndexIframe().contentWindow.postMessage('HELO', '*'); }, 200);
     }
     identityUuid = uuid;
   };

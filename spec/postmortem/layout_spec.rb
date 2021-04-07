@@ -26,7 +26,7 @@ RSpec.describe Postmortem::Layout do
 
   context 'with upload URL from environment' do
     before { stub_const('ENV', ENV.to_h.merge(env)) }
-    let(:env) { { 'POSTMORTEM_UPLOAD_URL' => 'http://localhost:4000/emails' } }
+    let(:env) { { 'POSTMORTEM_DELIVERY_URL' => 'http://localhost:4000/emails' } }
     its(:upload_url) { is_expected.to eql 'http://localhost:4000/emails' }
   end
 end
