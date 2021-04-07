@@ -40,9 +40,9 @@
   const storage = window.localStorage;
 
   const initialize = () => {
-    reloadIdentityIframeTimeout = setTimeout(() => identityIframe.src += '', 3000);
+    reloadIdentityIframeTimeout = setTimeout(() => identityIframe.src += '', 1000);
 
-    setInterval(function () { identityIframe.contentWindow.postMessage('HELO', '*'); }, 1000);
+    setInterval(function () { identityIframe.contentWindow.postMessage('HELO', '*'); }, 200);
 
     toolbar.html.onclick       = (ev) => setView('html', ev);
     toolbar.text.onclick       = (ev) => setView('text', ev);
@@ -229,6 +229,14 @@
     setView(currentView);
   };
 
+  const setContent = (selector, content) => {
+    const target = document.querySelector(selector).contentDocument;
+
+    target.open();
+    target.write(content);
+    target.close();
+  };
+
   const loadMail = (mail) => {
     const initializeScript = document.querySelector("#initialize-script");
     const initObject = {
@@ -242,18 +250,9 @@
       `const POSTMORTEM = ${JSON.stringify(initObject)};`
     ].join('\n\n');
 
-    htmlIframeDocument.open();
-    htmlIframeDocument.write(mail.htmlBody);
-    htmlIframeDocument.close();
-
-    textIframeDocument.open();
-    textIframeDocument.write(`<pre>${htmlEscape(mail.textBody)}</pre>`);
-    textIframeDocument.close();
-
-    sourceIframeDocument.open();
-    sourceIframeDocument.write(`<pre><code style="padding: 1rem;" class="language-html">${htmlEscape(mail.htmlBody)}</code></pre>`);
-    sourceIframeDocument.write(sourceHighlightBundle);
-    sourceIframeDocument.close();
+    setContent('#html-iframe', mail.htmlBody);
+    setContent('#text-iframe', `<pre>${htmlEscape(mail.textBody)}</pre>`);
+    setContent('#source-iframe', `<pre><code style="padding: 1rem;" class="language-html">${htmlEscape(mail.htmlBody)}</code></pre>` + sourceHighlightBundle);
 
     loadHeaders(mail);
     loadToolbar(mail);
@@ -354,7 +353,7 @@
 
   const compareIdentity = (uuid) => {
     clearTimeout(reloadIdentityIframeTimeout);
-    reloadIdentityIframeTimeout = setTimeout(() => identityIframe.src += '', 3000);
+    reloadIdentityIframeTimeout = setTimeout(() => identityIframe.src += '', 1000);
     if (identityUuid !== uuid) {
       indexIframe.src += '';
       clearTimeout(indexIframeTimeout);
