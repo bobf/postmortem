@@ -18,6 +18,10 @@
   color: #007bff !important;
 }
 
+a.icon:hover {
+  text-decoration: none;
+}
+
 .inbox-container {
   width: 35rem;
   max-width: 35rem;

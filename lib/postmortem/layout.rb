@@ -41,6 +41,10 @@ module Postmortem
       default_layout_directory.join('favicon.b64').read
     end
 
+    def upload_url
+      ENV.fetch('POSTMORTEM_UPLOAD_URL', 'https://postmortem.delivery/emails')
+    end
+
     private
 
     def default_layout_directory

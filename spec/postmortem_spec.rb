@@ -13,6 +13,7 @@ RSpec.describe Postmortem do
     let(:preview_directory) { File.join(Dir.tmpdir, 'postmortem-test') }
     let(:filename) { 'index.html' }
     let(:path) { Pathname.new(preview_directory).join(filename) }
+    let(:hash) { delivery.id }
 
     before do
       Postmortem.configure do |config|
@@ -46,7 +47,7 @@ RSpec.describe Postmortem do
       before { allow($stdout).to receive(:tty?) { true } }
 
       it 'outputs a colorized URL' do
-        expect($stdout).to receive(:write).with("\e[34m[postmortem]\e[36m file://#{path}\e[0m\n")
+        expect($stdout).to receive(:write).with("\e[34m[postmortem]\e[36m file://#{path}##{hash}\e[0m\n")
         Postmortem.record_delivery(delivery)
       end
     end
@@ -55,7 +56,7 @@ RSpec.describe Postmortem do
       before { allow($stdout).to receive(:tty?) { false } }
 
       it 'outputs a URL' do
-        expect($stdout).to receive(:write).with("file://#{path}\n")
+        expect($stdout).to receive(:write).with("file://#{path}##{hash}\n")
         Postmortem.record_delivery(delivery)
       end
     end

@@ -16,33 +16,33 @@
 
       <a target="_blank" href="https://github.com/bobf/postmortem"><h1 class="text-secondary" id="title">Post<i class="fa fa-envelope" aria-hidden="true"></i>Mortem</h1></a>
 
-      <a href="javascript:void(0)" class="text-secondary" id="download-link" download="Email.html">
+      <a href="javascript:void(0)" class="text-secondary icon" id="download-link" download="Email.html">
         <i data-toggle="tooltip"
-           title="Download for sharing"
-           class="fa fa-cloud-download download-button"></i>
+           title="Upload for sharing"
+           class="fas fa-cloud-upload-alt icon download-button"></i>
       </a>
 
       <i data-toggle="tooltip"
          title="View HTML Source"
-         class="fa fa-code source-view-switch"></i>
+         class="fa fa-code icon source-view-switch"></i>
 
       <i data-toggle="tooltip"
          title="View HTML Part"
-         class="fa fa-file-code-o html-view-switch"></i>
+         class="fa fa-file-code-o icon html-view-switch"></i>
 
       <i data-toggle="tooltip"
          title="View Plaintext Part"
-         class="fa fa-file-text-o text-view-switch"></i>
+         class="fa fa-file-text-o icon text-view-switch"></i>
 
       <span class="separator"></span>
 
       <i data-toggle="tooltip"
          title="Toggle Inbox"
-         class="fa fa-columns column-switch"></i>
+         class="fa fa-columns icon column-switch"></i>
 
       <i data-toggle="tooltip"
          title="Toggle Headers"
-         class="fa fa-envelope-open-o headers-view-switch"></i>
+         class="fa fa-envelope-open-o icon headers-view-switch"></i>
 
     </div>
 
@@ -97,6 +97,7 @@
       POSTMORTEM.initialData = <%= mail.serializable.to_json %>;
       POSTMORTEM.hasHtml = <%= (!mail.html_body.nil?).to_json %>;
       POSTMORTEM.hasText = <%= (!mail.text_body.nil?).to_json %>;
+      POSTMORTEM.uploadUrl = <%= upload_url.to_json %>;
     </script>
     <script>
       <%= javascript %>

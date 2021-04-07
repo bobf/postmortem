@@ -320,6 +320,28 @@
   };
 
   const loadDownloadLink = (mail) => {
+    // XXX
+    const link = document.querySelector("#download-link");
+
+    link.onclick = async function(ev) {
+      ev.stopPropagation();
+      ev.preventDefault();
+
+      const response = await fetch(POSTMORTEM.uploadUrl, {
+        method: 'POST',
+        // mode: 'no-cors',
+        cache: 'no-cache',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: POSTMORTEM.initialData })
+      });
+
+      console.log(response.json());
+      return false;
+    };
+
+    return;
+    // XXX
+
     const html = document.documentElement.innerHTML;
     const start = html.indexOf('<!--INBOX-START-->');
     const end = html.indexOf('<!--INBOX-END-->') + '<!--INBOX-END-->'.length;

@@ -22,4 +22,11 @@ RSpec.describe Postmortem::Layout do
   its(:content) { is_expected.to eql "<html><body><div>My HTML content</div></body></html>\n" }
   its(:styles) { is_expected.to include '.content {' }
   its(:javascript) { is_expected.to include 'function ()' }
+  its(:upload_url) { is_expected.to eql 'https://postmortem.delivery/emails' }
+
+  context 'with upload URL from environment' do
+    before { stub_const('ENV', ENV.to_h.merge(env)) }
+    let(:env) { { 'POSTMORTEM_UPLOAD_URL' => 'http://localhost:4000/emails' } }
+    its(:upload_url) { is_expected.to eql 'http://localhost:4000/emails' }
+  end
 end
