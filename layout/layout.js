@@ -320,8 +320,52 @@
     alert(`Upload failed. Got: ${response.status} ${response.statusText}: ${content}`);
   };
 
+  const copyToClipboard = (text) => {
+    const textArea = document.createElement("textarea");
+    textArea.style.position = 'fixed';
+    textArea.style.top = 0;
+    textArea.style.left = 0;
+    textArea.style.width = '2em';
+    textArea.style.height = '2em';
+    textArea.style.padding = 0;
+    textArea.style.border = 'none';
+    textArea.style.outline = 'none';
+    textArea.style.boxShadow = 'none';
+    textArea.style.background = 'transparent';
+    textArea.value = text;
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    let success;
+
+    try {
+      success = document.execCommand('copy');
+    } catch (err) {
+      console.log('Clipboard copy error');
+    }
+
+    document.body.removeChild(textArea);
+    return success;
+  };
+
   const alertUploadSuccess = (data) => {
-    alert(`Upload succeeded. URI: ${data.uri}, Expiry: ${data.expiresAt}`);
+    const popup = document.querySelector("#upload-popup");
+    const uploadedEmailLink = document.querySelector("#uploaded-email-link");
+    const copyUploadedEmailLink = document.querySelector("#copy-uploaded-email-link");
+    const url = `https://postmortem.delivery/${data.uri}`;
+
+    uploadedEmailLink.textContent = `postmortem.delivery/${data.uri}`;
+    uploadedEmailLink.href = url;
+    copyUploadedEmailLink.onclick = (ev) => {
+      ev.stopPropagation();
+      ev.preventDefault();
+      const success = copyToClipboard(url);
+      console.log(success);
+    };
+
+    popup.classList.remove("hidden");
+    popup.classList.add("fade-in");
   };
 
   const loadDownloadLink = (mail) => {
@@ -335,7 +379,7 @@
     $("#download-link").attr('download', mail.subject.replace(/[^0-9a-zA-Z_ -]/gi, '') + '.html');
   };
 
-  const loadUploadLink = (mail) => {
+  const loadUploadLink = (email) => {
     const link = document.querySelector("#upload-link");
 
     link.onclick = async (ev) => {
@@ -346,7 +390,7 @@
         method: 'POST',
         cache: 'no-cache',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: POSTMORTEM.initialData })
+        body: JSON.stringify({ email })
       });
 
       if (response.ok) {

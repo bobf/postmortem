@@ -7,6 +7,47 @@
   margin: 0;
 }
 
+.fade-in {
+  opacity: 1;
+  animation-name: fadeInOpacity;
+  animation-iteration-count: 1;
+  animation-timing-function: ease-in;
+  animation-duration: 0.5s;
+}
+
+@keyframes fadeInOpacity {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.external-link-icon {
+  color: #007bff;
+  font-size: 1rem !important;
+}
+
+#upload-popup {
+  position: absolute;
+  right: 15rem;
+  width: auto;
+  background-color: white;
+  top: 0.3rem;
+  text-align: left;
+  padding: 0.2rem;
+}
+
+#upload-popup #copy-uploaded-email-link {
+  border-left: 1px solid #ccc;
+  padding: 0 0.2rem;
+}
+
+#upload-popup.hidden {
+  display: none;
+}
+
 #title {
   float: left;
   padding: 0;
