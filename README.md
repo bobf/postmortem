@@ -19,6 +19,7 @@ _PostMortem_ should only be enabled in test or development environments.
 * Local images are located and embedded in HTML so you can see the full version of outgoing emails.
 * Runs without a server - single page app runs on file system with no need to run a local web server to access UI.
 * Any captured email can be downloaded into a standalone HTML file which can be shared with others.
+* Similarly, any captured eamil can also be uploaded to a stanadlone version of _Postmortem_ at https://postmortem.delivery/<unique-id>
 
 ## Installation
 
