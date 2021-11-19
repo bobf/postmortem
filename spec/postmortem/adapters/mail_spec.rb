@@ -17,9 +17,13 @@ RSpec.describe Postmortem::Adapters::Mail do
         html_part: double(decoded: '<div>My HTML content</div>'),
         message_id: 'abc-123',
         has_content_type?: false,
-        multipart?: true
+        multipart?: true,
+        attachments: [attachment]
       }
     )
+  end
+  let(:attachment) do
+    instance_double(::Mail::Part, filename: 'example.png', decoded: 'decoded-image')
   end
 
   it { is_expected.to be_a described_class }
@@ -29,4 +33,11 @@ RSpec.describe Postmortem::Adapters::Mail do
   its(:bcc) { is_expected.to eql 'bcc@example.com' }
   its(:text_body) { is_expected.to eql 'My text content' }
   its(:html_body) { is_expected.to eql '<div>My HTML content</div>' }
+
+  describe '#attachments' do
+    subject { adapter.attachments.first }
+
+    its(:filename) { is_expected.to eql 'example.png' }
+    its(:decoded) { is_expected.to eql 'decoded-image' }
+  end
 end

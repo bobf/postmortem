@@ -12,7 +12,8 @@ module Postmortem
           subject: mail.subject,
           text_body: @data[:body],
           html_body: @data[:html_body],
-          message_id: mail.message_id # We use a synthetic Mail instance so this is a bit useless.
+          message_id: mail.message_id, # We use a synthetic Mail instance so this is a bit useless.
+          attachments: translated_attachments
         }
       end
 
@@ -22,6 +23,16 @@ module Postmortem
 
       def keys
         %i[from reply_to to cc bcc subject text_body html_body]
+      end
+
+      def translated_attachments
+        return [] unless @data.key?(:attachments)
+
+        @data[:attachments].each do |filename, content|
+          mail.add_file(filename: filename, content: content)
+        end
+
+        mail.attachments
       end
     end
   end

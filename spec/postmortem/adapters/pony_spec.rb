@@ -12,7 +12,8 @@ RSpec.describe Postmortem::Adapters::Pony do
       bcc: 'bcc@example.com',
       subject: 'Email Subject',
       body: 'My text content',
-      html_body: '<div>My HTML content</div>'
+      html_body: '<div>My HTML content</div>',
+      attachments: { 'example.png' => 'image-content' }
     }
   end
 
@@ -23,4 +24,11 @@ RSpec.describe Postmortem::Adapters::Pony do
   its(:bcc) { is_expected.to eql ['bcc@example.com'] }
   its(:text_body) { is_expected.to eql 'My text content' }
   its(:html_body) { is_expected.to eql '<div>My HTML content</div>' }
+
+  describe '#attachments' do
+    subject { adapter.attachments.first }
+
+    its(:filename) { is_expected.to eql 'example.png' }
+    its(:decoded) { is_expected.to eql 'image-content' }
+  end
 end

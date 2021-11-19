@@ -10,9 +10,10 @@ RSpec.describe Postmortem::Adapters::ActionMailer do
       cc: 'cc@example.com',
       bcc: 'bcc@example.com',
       subject: 'Email Subject',
-      mail: fixture('multipart.eml').read
+      mail: mail
     }
   end
+  let(:mail) { fixture('multipart.eml').read }
 
   it { is_expected.to be_a described_class }
   its(:from) { is_expected.to eql ['from@example.com'] }
@@ -21,4 +22,15 @@ RSpec.describe Postmortem::Adapters::ActionMailer do
   its(:bcc) { is_expected.to eql ['bcc@example.com'] }
   its(:html_body) { is_expected.to eql "<div>My HTML content</div>\n\n" }
   its(:text_body) { is_expected.to eql "My text content\n" }
+
+  describe '#attachments' do
+    subject { adapter.attachments.first }
+
+    context 'with attachments' do
+      let(:mail) { fixture('attachments.eml').read }
+
+      its(:filename) { is_expected.to eql 'attachment.txt' }
+      its(:decoded) { is_expected.to eql "decoded-content\n" }
+    end
+  end
 end
