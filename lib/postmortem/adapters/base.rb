@@ -16,7 +16,7 @@ module Postmortem
       end
 
       def serializable
-        (%i[id] + FIELDS).map { |field| [camelize(field.to_s), public_send(field)] }.to_h
+        (%i[id] + FIELDS).to_h { |field| [camelize(field.to_s), public_send(field)] }
       end
 
       def id

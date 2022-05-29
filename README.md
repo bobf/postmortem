@@ -27,7 +27,7 @@ Add the gem to your application's Gemfile:
 
 ```ruby
 group :development, :test do
-  gem 'postmortem', '~> 0.3.1'
+  gem 'postmortem', '~> 0.3.2'
 end
 ```
 

@@ -41,7 +41,7 @@ module Postmortem
     end
 
     def safe_subject
-      subject.tr(' ', '_').split('').select { |char| safe_chars.include?(char) }.join
+      subject.tr(' ', '_').chars.select { |char| safe_chars.include?(char) }.join
     end
 
     def safe_chars

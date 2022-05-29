@@ -11,7 +11,7 @@ module Postmortem
 
     def content
       mail_path = @mail_path
-      ERB.new(File.read(template_path), nil, '-').result(binding)
+      ERB.new(File.read(template_path), trim_mode: '-').result(binding)
     end
 
     def size

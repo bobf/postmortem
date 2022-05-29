@@ -4,7 +4,7 @@ module Postmortem
   # Provides an HTML document that announces a unique ID to a parent page via JS message events.
   class Identity
     def content
-      ERB.new(File.read(path), nil, '-').result(binding)
+      ERB.new(File.read(path), trim_mode: '-').result(binding)
     end
 
     private

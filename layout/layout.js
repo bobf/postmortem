@@ -375,8 +375,9 @@
     const modifiedHtml = [html.substring(0, start), html.substring(end + 1, html.length)].join('');
     const blob = new Blob([modifiedHtml], { type: 'application/octet-stream' });
     const uri = window.URL.createObjectURL(blob);
+    const subject = mail.subject || '(No subject)'
     $("#download-link").attr('href', uri);
-    $("#download-link").attr('download', mail.subject.replace(/[^0-9a-zA-Z_ -]/gi, '') + '.html');
+    $("#download-link").attr('download', subject.replace(/[^0-9a-zA-Z_ -]/gi, '') + '.html');
   };
 
   const loadUploadLink = (email) => {
