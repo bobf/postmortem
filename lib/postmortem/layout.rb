@@ -54,13 +54,23 @@ module Postmortem
     def with_inlined_images(body)
       parsed = Nokogiri::HTML.parse(body)
       parsed.css('img').each do |img|
-        uri = try_uri(img['src'])
+        uri = extract_image_uri(img)
         next unless local_file?(uri)
 
         path = located_image(uri)
         img['src'] = encoded_image(path) unless path.nil?
       end
       parsed.to_s
+    end
+
+    def extract_image_uri(img)
+      src_uri = try_uri(img['src'])
+      return src_uri if src_uri&.path.present?
+
+      original_src_uri = try_uri(img['data-originalsrc'])
+      return original_src_uri if original_src_uri&.path.present?
+
+      nil
     end
 
     def local_file?(uri)
