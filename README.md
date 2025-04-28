@@ -2,11 +2,13 @@
 
 _PostMortem_ provides a simple and clean preview of all outgoing mails sent by your _Ruby_ application to make email development a little less painful.
 
-Every time your application sends an email a clearly-visible log entry will be written which provides a path to a temporary file containing your preview.
+Every time your application sends an email a clearly-visible log entry is written which provides a path to a temporary file containing your preview.
 
 Take a look at a [live example](https://postmortem.surge.sh/) to see _PostMortem_ in action.
 
 _PostMortem_ should only be enabled in test or development environments.
+
+![Screenshot](doc/screenshot.png)
 
 ## Features
 
@@ -19,7 +21,7 @@ _PostMortem_ should only be enabled in test or development environments.
 * Local images are located and embedded in HTML so you can see the full version of outgoing emails.
 * Runs without a server - single page app runs on file system with no need to run a local web server to access UI.
 * Any captured email can be downloaded into a standalone HTML file which can be shared with others.
-* Similarly, any captured eamil can also be uploaded to a stanadlone version of _Postmortem_ at https://postmortem.delivery/<unique-id>
+* Similarly, any captured email can also be uploaded to a stanadlone version of _Postmortem_ at https://postmortem.delivery/<unique-id>
 
 ## Installation
 
@@ -41,7 +43,7 @@ Or install it yourself as:
 
 ## Usage
 
-_PostMortem_ automatically integrates with _Rails ActionMailer_ and  _Pony_. When an email is sent an entry will be visible in your application's log output.
+_PostMortem_ automatically integrates with _Rails ActionMailer_ and  _Pony_. When an email is sent an entry is visible in your application's log output.
 
 If you are using assets (images etc.) with _ActionMailer_ make sure to configure the asset host, e.g.:
 
@@ -52,9 +54,7 @@ Rails.application.configure do
 end
 ```
 
-A log entry will be generated every time an email is sent. Load the path provided in the log entry in your browser to launch _PostMortem_:
-
-![Screenshot](doc/screenshot.png)
+A log entry is very time an email is sent. Load the path provided in the log entry in your browser to launch _PostMortem_:
 
 ### Clearing the inbox
 
@@ -79,7 +79,7 @@ Postmortem.configure do |config|
   config.log_path = '/path/to/postmortem.log'
 
   # Path to save preview .html files (default: OS-provided temp directory).
-  # The directory will be created if it does not exist.
+  # The directory is created if it does not exist.
   config.preview_directory = '/path/to/postmortem/directory'
 
   # Provide a custom layout path if the default interface does not suit you.
