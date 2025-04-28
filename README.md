@@ -54,7 +54,7 @@ Rails.application.configure do
 end
 ```
 
-A log entry is very time an email is sent. Load the path provided in the log entry in your browser to launch _PostMortem_:
+A log entry is written every time an email is sent. Load the path provided in the log entry in your browser to launch _PostMortem_:
 
 ### Clearing the inbox
 
